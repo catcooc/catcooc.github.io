@@ -3,7 +3,7 @@
 
 ---
 
-<center><img src="../public/img/favicon.png"></center>
+<center><img src="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/preview.png"/></center>
 
 Install from butterfly
 ---
