@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"catcooc.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":null,"activeClass":"disqus"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="用julia实现一些数值方法 不过这些方法julia肯定有现成的库和函数解决了 我只是练练手瞎写一些东西">
+<meta property="og:type" content="article">
+<meta property="og:title" content="julia 数值分析">
+<meta property="og:url" content="https://catcooc.github.io/post/f212ddce.html">
+<meta property="og:site_name" content="mkk的小窝">
+<meta property="og:description" content="用julia实现一些数值方法 不过这些方法julia肯定有现成的库和函数解决了 我只是练练手瞎写一些东西">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-09-12T07:38:48.000Z">
+<meta property="article:modified_time" content="2023-10-10T09:08:29.067Z">
+<meta property="article:author" content="mkk">
+<meta property="article:tag" content="数值分析">
+<meta property="article:tag" content="julia">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://catcooc.github.io/post/f212ddce.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://catcooc.github.io/post/f212ddce.html","path":"post/f212ddce.html","title":"julia 数值分析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>julia 数值分析 | mkk的小窝</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">mkk的小窝</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">这里存放了一些杂草</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-链接"><a href="/link/" rel="section"><i class="fas fa-link fa-fw"></i>链接</a></li><li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fas fa-heart fa-fw"></i>关于</a></li><li class="menu-item menu-item-留言板"><a href="/messageboard/" rel="section"><i class="fas fa-tags fa-fw"></i>留言板</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#section"><span class="nav-number">1.</span> <span class="nav-text">0</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E9%A1%B9%E5%BC%8F%E6%B1%82%E5%80%BC"><span class="nav-number">1.1.</span> <span class="nav-text">多项式求值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%B5%AE%E7%82%B9%E6%95%B0%E8%A1%A8%E7%A4%BA"><span class="nav-number">1.2.</span> <span class="nav-text">实现浮点数表示</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B1%82%E8%A7%A3%E6%96%B9%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">求解方程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E5%88%86%E6%B3%95"><span class="nav-number">2.1.</span> <span class="nav-text">二分法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E5%8A%A8%E7%82%B9%E8%BF%AD%E4%BB%A3"><span class="nav-number">2.2.</span> <span class="nav-text">不动点迭代</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%9B%E9%A1%BF%E6%B3%95-%E5%89%B2%E7%BA%BF%E6%B3%95"><span class="nav-number">2.3.</span> <span class="nav-text">牛顿法 割线法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B1%82%E8%A7%A3%E6%96%B9%E7%A8%8B%E7%BB%84"><span class="nav-number">3.</span> <span class="nav-text">求解方程组</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E6%96%AF%E6%B6%88%E5%8E%BB%E6%B3%95-lu%E5%88%86%E8%A7%A3"><span class="nav-number">3.1.</span> <span class="nav-text">高斯消去法 LU分解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%AF%E5%B7%AE%E6%9D%A5%E6%BA%90"><span class="nav-number">3.1.1.</span> <span class="nav-text">误差来源</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%85%E5%8F%AF%E6%AF%94%E6%96%B9%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">雅可比方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E6%96%AF-%E5%A1%9E%E5%BE%B3%E6%96%B9%E6%B3%95gauss-seidel"><span class="nav-number">5.</span> <span class="nav-text">高斯-塞徳方法（Gauss-Seidel)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9E%E7%BB%AD%E8%BF%87%E6%9D%BE%E9%A9%B0-sor"><span class="nav-number">5.1.</span> <span class="nav-text">连续过松驰 (SOR)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%9E%E7%BA%BF%E6%80%A7%E6%96%B9%E7%A8%8B%E7%BB%84"><span class="nav-number">5.2.</span> <span class="nav-text">非线性方程组</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E5%8F%98%E9%87%8F%E7%89%9B%E9%A1%BF%E6%B3%95"><span class="nav-number">5.2.1.</span> <span class="nav-text">多变量牛顿法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#broyden%E6%96%B9%E6%B3%95"><span class="nav-number">5.2.2.</span> <span class="nav-text">Broyden方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#broyden-%E6%96%B9%E6%B3%95ii"><span class="nav-number">5.2.3.</span> <span class="nav-text">Broyden 方法II</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E5%80%BC"><span class="nav-number">6.</span> <span class="nav-text">插值</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%8F%92%E5%80%BC"><span class="nav-number">6.1.</span> <span class="nav-text">拉格朗日插值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%9B%E9%A1%BF%E5%B7%AE%E5%95%86"><span class="nav-number">6.2.</span> <span class="nav-text">牛顿差商</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E6%AF%94%E9%9B%AA%E5%A4%AB%E6%8F%92%E5%80%BC%E8%8A%82%E7%82%B9"><span class="nav-number">6.3.</span> <span class="nav-text">切比雪夫插值节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E6%AC%A1%E6%A0%B7%E6%9D%A1%E6%8F%92%E5%80%BC"><span class="nav-number">6.4.</span> <span class="nav-text">三次样条插值</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E7%84%B6%E6%A0%B7%E6%9D%A1"><span class="nav-number">6.4.1.</span> <span class="nav-text">自然样条</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF"><span class="nav-number">6.5.</span> <span class="nav-text">贝塞尔曲线</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95"><span class="nav-number">7.</span> <span class="nav-text">最小二乘法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%95%E7%BA%BF%E6%96%B9%E7%A8%8B"><span class="nav-number">7.1.</span> <span class="nav-text">法线方程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#qr-%E5%88%86%E8%A7%A3"><span class="nav-number">7.2.</span> <span class="nav-text">QR 分解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%8F%E5%85%B8%E6%A0%BC%E6%8B%89%E5%A7%86-%E6%96%BD%E5%AF%86%E7%89%B9%E6%AD%A3%E4%BA%A4"><span class="nav-number">7.2.1.</span> <span class="nav-text">经典格拉姆-施密特正交</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%94%B9%E8%BF%9B%E6%A0%BC%E6%8B%89%E5%A7%86-%E6%96%BD%E5%AF%86%E7%89%B9%E6%AD%A3%E4%BA%A4"><span class="nav-number">7.2.2.</span> <span class="nav-text">改进格拉姆-施密特正交</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B1%AA%E6%96%AF%E9%9C%8D%E5%B0%94%E5%BE%B3-%E6%96%B9%E6%B3%95"><span class="nav-number">7.2.3.</span> <span class="nav-text">豪斯霍尔徳 方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%9A%E8%BF%87-q-r-%E5%88%86%E8%A7%A3%E5%AE%9E%E7%8E%B0%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98"><span class="nav-number">7.2.4.</span> <span class="nav-text">通过 \(Q
+R\) 分解实现最小二乘</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%9E%E7%BA%BF%E6%80%A7%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95"><span class="nav-number">7.3.</span> <span class="nav-text">非线性最小二乘法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%AB%98%E6%96%AF%E4%B8%80%E7%89%9B%E9%A1%BF%E6%96%B9%E6%B3%95"><span class="nav-number">7.3.1.</span> <span class="nav-text">高斯一牛顿方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#levenberg-marquardt-%E6%96%B9%E6%B3%95"><span class="nav-number">7.3.2.</span> <span class="nav-text">Levenberg-Marquardt 方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E5%80%BC%E5%BE%AE%E5%88%86%E5%92%8C%E7%A7%AF%E5%88%86"><span class="nav-number">8.</span> <span class="nav-text">数值微分和积分</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A7%AF%E5%88%86"><span class="nav-number">8.0.1.</span> <span class="nav-text">积分</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A4%8D%E5%90%88%E6%A2%AF%E5%BD%A2%E6%B3%95%E5%88%99"><span class="nav-number">8.0.1.1.</span> <span class="nav-text">复合梯形法则</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A4%8D%E5%90%88%E8%BE%9B%E6%99%AE%E6%A3%AE%E5%85%AC%E5%BC%8F"><span class="nav-number">8.0.1.2.</span> <span class="nav-text">复合辛普森公式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A4%8D%E5%90%88%E4%B8%AD%E7%82%B9%E6%B3%95%E5%88%99"><span class="nav-number">8.0.1.3.</span> <span class="nav-text">复合中点法则</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%BE%99%E8%B4%9D%E6%A0%BC%E7%A7%AF%E5%88%86romberg-quadrature-formula"><span class="nav-number">8.0.1.4.</span> <span class="nav-text">龙贝格积分Romberg
+quadrature formula</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E6%95%B0%E5%92%8C%E5%BA%94%E7%94%A8"><span class="nav-number">9.</span> <span class="nav-text">随机数和应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E5%90%8C%E4%BD%99%E7%94%9F%E6%88%90%E5%99%A8"><span class="nav-number">9.0.1.</span> <span class="nav-text">线性同余生成器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83"><span class="nav-number">9.0.2.</span> <span class="nav-text">生成正态分布</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%92%99%E5%8D%A11%E5%9E%8B%E9%97%AE%E9%A2%98"><span class="nav-number">9.0.3.</span> <span class="nav-text">蒙卡1型问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%92%99%E5%8D%A12%E5%9E%8B%E9%97%AE%E9%A2%98"><span class="nav-number">9.0.4.</span> <span class="nav-text">蒙卡2型问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A9%E5%B1%95"><span class="nav-number">9.0.5.</span> <span class="nav-text">扩展</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8B%9F%E9%9A%8F%E6%9C%BA%E6%95%B0"><span class="nav-number">9.0.6.</span> <span class="nav-text">拟随机数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A5%87%E5%BC%82%E5%80%BC%E5%88%86%E8%A7%A3"><span class="nav-number">10.</span> <span class="nav-text">奇异值分解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E4%B9%A6%E7%B1%8D"><span class="nav-number">11.</span> <span class="nav-text">参考书籍</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="mkk"
+      src="/img/favicon.png">
+  <p class="site-author-name" itemprop="name">mkk</p>
+  <div class="site-description" itemprop="description">我在这里放了一些东西</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/catcooc" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;catcooc" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://catcooc.github.io/post/f212ddce.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/favicon.png">
+      <meta itemprop="name" content="mkk">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="mkk的小窝">
+      <meta itemprop="description" content="我在这里放了一些东西">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="julia 数值分析 | mkk的小窝">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          julia 数值分析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-09-12 15:38:48" itemprop="dateCreated datePublished" datetime="2023-09-12T15:38:48+08:00">2023-09-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-10-10 17:08:29" itemprop="dateModified" datetime="2023-10-10T17:08:29+08:00">2023-10-10</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/post/f212ddce.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="post/f212ddce.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>用julia实现一些数值方法 不过这些方法julia肯定有现成的库和函数解决了
+我只是练练手瞎写一些东西</p>
+<span id="more"></span>
+<h2 id="section">0</h2>
+<h3 id="多项式求值">多项式求值</h3>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> hornor(x::<span class="built_in">Float64</span>,n::<span class="built_in">Int64</span>,c::<span class="built_in">Vector</span>&#123;<span class="built_in">Float64</span>&#125;=[<span class="number">1.</span> <span class="keyword">for</span>  i <span class="keyword">in</span> <span class="number">1</span>:n+<span class="number">1</span>],b::<span class="built_in">Vector</span>&#123;<span class="built_in">Float64</span>&#125;=[<span class="number">0.</span> <span class="keyword">for</span>  i <span class="keyword">in</span> <span class="number">1</span>:n+<span class="number">1</span>])</span><br><span class="line">	y = c[<span class="keyword">end</span>]</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> n:-<span class="number">1</span>:<span class="number">1</span></span><br><span class="line">		y = y*( x- b[i])+c[i]</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> y</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<h3 id="实现浮点数表示">实现浮点数表示</h3>
+<h2 id="求解方程">求解方程</h2>
+<h3 id="二分法">二分法</h3>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> bisect(f::<span class="built_in">Function</span>,a::<span class="built_in">Float64</span>,b::<span class="built_in">Float64</span>,tol::<span class="built_in">Float64</span>=<span class="number">10</span>^-<span class="number">10</span>)</span><br><span class="line">	<span class="keyword">if</span> f(a)*f(b)&gt;<span class="number">0</span></span><br><span class="line">		error(<span class="string">&quot;f(a)f(b)&lt;0 not statisfied!&quot;</span>)</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">		println(ceil(log(<span class="number">2</span>,(b-a)/tol))+<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>:ceil(log(<span class="number">2</span>,(b-a)/tol))+<span class="number">1</span></span><br><span class="line">		<span class="keyword">global</span> c= (a + b)*<span class="number">.5</span></span><br><span class="line">		<span class="keyword">if</span> abs(f(c)) &lt; tol</span><br><span class="line">			println(<span class="string">&quot;find the solution&quot;</span>)</span><br><span class="line">			<span class="keyword">return</span> [c,f(c)]</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">		(a,b)= f(c) &lt; <span class="number">0</span> ? (c,b) : (a,c)</span><br><span class="line"></span><br><span class="line">		</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">return</span> [c,f(c)]</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<h3 id="不动点迭代">不动点迭代</h3>
+<p>假设函数 <span class="math inline">\(g\)</span> 是连续可微函数, <span
+class="math inline">\(g(r)=r,
+S=\left|g^{\prime}(r)\right|&lt;1\)</span>, 则不动点迭代对
+于一个足够接近 <span class="math inline">\(r\)</span> 的初始估计, 以速度
+<span class="math inline">\(S\)</span> 线性收玫到不动点 <span
+class="math inline">\(r\)</span>.</p>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> FPI(f::<span class="built_in">Function</span>,x0::<span class="built_in">Float64</span>,k::<span class="built_in">Int64</span>)</span><br><span class="line">	x=x0</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span>  <span class="number">1</span>:k</span><br><span class="line">		x0=f(x)</span><br><span class="line">		<span class="keyword">if</span> abs(x-x0)&lt; <span class="number">10</span>^-<span class="number">6</span>	</span><br><span class="line">			println(<span class="string">&quot;FPI convergence in &quot;</span>,i,<span class="string">&quot; step&quot;</span>)</span><br><span class="line">			<span class="keyword">return</span> x0</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">		x=x0</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">println(<span class="string">&quot;FPI &quot;</span>,FPI(x-&gt;<span class="number">1</span>-x^<span class="number">3.0</span> ,<span class="number">0.5</span>,<span class="number">100</span>))</span><br><span class="line">println(<span class="string">&quot;FPI &quot;</span>,FPI(x-&gt;(<span class="number">1</span>-x)^(<span class="number">1</span>/<span class="number">3</span>) ,<span class="number">0.5</span>,<span class="number">100</span>))</span><br><span class="line">println(<span class="string">&quot;FPI &quot;</span>,FPI(x-&gt;(<span class="number">1</span>+<span class="number">2</span>*x^<span class="number">3</span>)/(<span class="number">1</span>+<span class="number">3</span>*x^<span class="number">2</span>) ,<span class="number">0.5</span>,<span class="number">100</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment">#FPI 0.0</span></span><br><span class="line"><span class="comment">#FPI convergence in 39 step</span></span><br><span class="line"><span class="comment">#FPI 0.6823281782912355</span></span><br><span class="line"><span class="comment">#FPI convergence in 4 step</span></span><br><span class="line"><span class="comment">#FPI 0.682327803828347</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="牛顿法-割线法">牛顿法 割线法</h3>
+<p>通过切线的方式不断求零点</p>
+<p>割线法</p>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> secant_method(f::<span class="built_in">Function</span>,x0::<span class="built_in">Float64</span>,x1::<span class="built_in">Float64</span>=x0+x0*<span class="number">0.1</span>,k::<span class="built_in">Int64</span>=<span class="number">100</span>,eta::<span class="built_in">Float64</span>=<span class="number">10</span>^-<span class="number">6</span>)</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>:k </span><br><span class="line">		x2 = x1- f(x1)*(x1-x0)/(f(x1)- f(x0))</span><br><span class="line">		<span class="keyword">if</span> abs(x2-x1)/(x2+eta)&lt; eta	</span><br><span class="line">			println(<span class="string">&quot;secant_method convergence in &quot;</span>,i,<span class="string">&quot; step&quot;</span>)</span><br><span class="line">			<span class="keyword">return</span> x2</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">			</span><br><span class="line">		</span><br><span class="line"></span><br><span class="line">		x0 = x1</span><br><span class="line">		x1 = x2</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">return</span> x1</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> Regula_Falsi(f::<span class="built_in">Function</span>,a::<span class="built_in">Float64</span>,b::<span class="built_in">Float64</span>,k::<span class="built_in">Int64</span>=<span class="number">100</span>,eta::<span class="built_in">Float64</span>=<span class="number">10</span>^-<span class="number">6</span>)</span><br><span class="line">	<span class="keyword">if</span> f(a)*f(b)&gt;<span class="number">0</span></span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;error range&quot;</span></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>:k</span><br><span class="line">		c= (b*f(a)-a*f(b))/(f(a)-f(b))</span><br><span class="line">		<span class="keyword">if</span> abs(f(c)) ==<span class="number">0</span></span><br><span class="line">			<span class="keyword">return</span> c</span><br><span class="line"></span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> check_tol(a,c,eta) &lt;eta ||  check_tol(a,c,eta) &lt;eta </span><br><span class="line">			println(<span class="string">&quot; Regula_Falsi in  &quot;</span>, i, <span class="string">&quot;step&quot;</span>, <span class="string">&quot;f(c)=&quot;</span>,f(c),<span class="string">&quot; c=&quot;</span>,c )</span><br><span class="line">			<span class="keyword">return</span> c</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">		(a,b) = f(a)*f(c) ? (a,c) : (c,a)</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>试位法</p>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> secant_method(f::<span class="built_in">Function</span>,x0::<span class="built_in">Float64</span>,x1::<span class="built_in">Float64</span>=x0+x0*<span class="number">0.1</span>,k::<span class="built_in">Int64</span>=<span class="number">100</span>,eta::<span class="built_in">Float64</span>=<span class="number">10</span>^-<span class="number">6</span>)</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>:k </span><br><span class="line">		x2 = x1- f(x1)*(x1-x0)/(f(x1)- f(x0))</span><br><span class="line">		<span class="keyword">if</span> abs(x2-x1)/(x2+eta)&lt; eta	</span><br><span class="line">			println(<span class="string">&quot;secant_method convergence in &quot;</span>,i,<span class="string">&quot; step&quot;</span>)</span><br><span class="line">			<span class="keyword">return</span> x2</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">			</span><br><span class="line">		</span><br><span class="line"></span><br><span class="line">		x0 = x1</span><br><span class="line">		x1 = x2</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">return</span> x1</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> Regula_Falsi(f::<span class="built_in">Function</span>,a::<span class="built_in">Float64</span>,b::<span class="built_in">Float64</span>,k::<span class="built_in">Int64</span>=<span class="number">100</span>,eta::<span class="built_in">Float64</span>=<span class="number">10</span>^-<span class="number">6</span>)</span><br><span class="line">	<span class="keyword">if</span> f(a)*f(b)&gt;<span class="number">0</span></span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;error range&quot;</span></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>:k</span><br><span class="line">		c= (b*f(a)-a*f(b))/(f(a)-f(b))</span><br><span class="line">		<span class="keyword">if</span> abs(f(c)) ==<span class="number">0</span></span><br><span class="line">			<span class="keyword">return</span> c</span><br><span class="line"></span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> check_tol(a,c,eta) &lt;eta ||  check_tol(a,c,eta) &lt;eta </span><br><span class="line">			println(<span class="string">&quot; Regula_Falsi in  &quot;</span>, i, <span class="string">&quot;step&quot;</span>, <span class="string">&quot;f(c)=&quot;</span>,f(c),<span class="string">&quot; c=&quot;</span>,c )</span><br><span class="line">			<span class="keyword">return</span> c</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">		(a,b) = f(a)*f(c) ? (a,c) : (c,a)</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<h2 id="求解方程组">求解方程组</h2>
+<p>首先提一句julia中 <code>\</code>函数可以求解线性方程组<span
+class="math inline">\(A x = b\)</span> ，其中<span
+class="math inline">\(A\)</span>是方阵</p>
+<p>当A的行数大于列数时，<code>\</code>函数可以计算超定方程的最小二乘解</p>
+<p>一个坑要注意 <code>'</code> 在julia里面是厄密不仅仅是转置</p>
+<h3 id="高斯消去法-lu分解">高斯消去法 LU分解</h3>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">using</span> LinearAlgebra</span><br><span class="line"><span class="keyword">function</span> back_substitution(a::(<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;),b::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;,order::<span class="built_in">Int64</span>=<span class="number">1</span>)</span><br><span class="line">	n=length(b)</span><br><span class="line">	x=zeros(<span class="number">1</span>,n)</span><br><span class="line">	l= order==<span class="number">1</span> ? (n:-<span class="number">1</span>:<span class="number">1</span>) : (<span class="number">1</span>:n)</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> l</span><br><span class="line">		l2= order==<span class="number">1</span> ? (i+<span class="number">1</span> : n) : (<span class="number">1</span>:i-<span class="number">1</span>)</span><br><span class="line">		<span class="keyword">for</span> j <span class="keyword">in</span> l2</span><br><span class="line">			b[i]-= a[i,j]*x[j]</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">		</span><br><span class="line">		x[i] = b[i]/a[i,i]</span><br><span class="line"></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">return</span> x</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> Gaussian_elimination(a::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;,b::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;)</span><br><span class="line">	n=length(b)</span><br><span class="line">	<span class="keyword">for</span> j <span class="keyword">in</span>  <span class="number">1</span> : n-<span class="number">1</span></span><br><span class="line">		<span class="keyword">if</span> abs(a[j,j]) &lt; <span class="number">10</span>^-<span class="number">20</span></span><br><span class="line">			error(<span class="string">&quot;zero pivot encountered&quot;</span>)</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">		<span class="keyword">for</span> i <span class="keyword">in</span>  j+<span class="number">1</span>:n</span><br><span class="line">			mult = a[i,j]/a[j,j]</span><br><span class="line">			<span class="keyword">for</span> k = j : n</span><br><span class="line">				a[i,k] -=mult*a[j,k]  </span><br><span class="line">			<span class="keyword">end</span></span><br><span class="line">			b[i] -= mult*b[j]</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">return</span> back_substitution(a,b)</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">println(Gaussian_elimination(<span class="number">1.0</span>*[<span class="number">1</span> <span class="number">2</span> -<span class="number">1</span>; <span class="number">2</span> <span class="number">1</span> -<span class="number">2</span> ; -<span class="number">3</span> <span class="number">1</span> <span class="number">1</span>],[<span class="number">3</span> <span class="number">3</span> -<span class="number">6</span>]*<span class="number">1.0</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> LU(m::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;)</span><br><span class="line">n=length(m[<span class="number">1</span>,:])</span><br><span class="line"></span><br><span class="line">L=zeros(n,n)+I</span><br><span class="line">	<span class="keyword">for</span> j <span class="keyword">in</span>  <span class="number">1</span> : n-<span class="number">1</span></span><br><span class="line">		<span class="comment">#L[j,j]=1</span></span><br><span class="line">		<span class="keyword">if</span> abs(m[j,j]) &lt; <span class="number">10</span>^-<span class="number">20</span></span><br><span class="line">			error(<span class="string">&quot;zero pivot encountered&quot;</span>)</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">		<span class="keyword">for</span> i <span class="keyword">in</span>  j+<span class="number">1</span>:n</span><br><span class="line">			</span><br><span class="line">			L[i,j]=  m[i,j]/m[j,j]</span><br><span class="line">			<span class="keyword">for</span> k = j : n</span><br><span class="line">				m[i,k] -= L[i,j]*m[j,k]  </span><br><span class="line">			<span class="keyword">end</span></span><br><span class="line">			</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> L,m</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">function</span> LU_solve(L::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;,U::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;,b::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;)</span><br><span class="line">	c=back_substitution(L,b,-<span class="number">1</span>)</span><br><span class="line">	println(c)</span><br><span class="line">	back_substitution(U,c)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">L,U=LU(<span class="number">1.0</span>*[<span class="number">1</span> <span class="number">2</span> -<span class="number">1</span> ; <span class="number">2</span> <span class="number">1</span> -<span class="number">2</span> ; -<span class="number">3</span> <span class="number">1</span> <span class="number">1</span>])</span><br><span class="line">println(L)</span><br><span class="line">println(U)</span><br><span class="line">println(LU_solve(L,U,[<span class="number">3</span> <span class="number">3</span> -<span class="number">6</span>]*<span class="number">1.0</span>))</span><br><span class="line">println(back_substitution([<span class="number">1</span> <span class="number">0</span> ; <span class="number">3</span> <span class="number">1</span> ]*<span class="number">1.0</span>,[<span class="number">3</span> <span class="number">2</span>]*<span class="number">1.0</span>,-<span class="number">1</span>))</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4 id="误差来源">误差来源</h4>
+<p>1.方阵 <span class="math inline">\(A\)</span>的性质<br />
+<span class="math display">\[
+\text { 误差放大因子 }=\frac{\text { 相对前向误差 }}{\text {
+相对后向误差
+}}=\frac{\frac{\left\|x-x_a\right\|_{\infty}}{\|x\|_{\infty}}}{\frac{\|r\|_{\infty}}{\|b\|_{\infty}}}
+\]</span></p>
+<p>方阵 <span class="math inline">\(A\)</span> 的条件数 <span
+class="math inline">\(\operatorname{cond}(A)\)</span> 为求解 <span
+class="math inline">\(A x=b\)</span> 时, 对于所有右侧向量 <span
+class="math inline">\(b\)</span>, 可能出 现的最大误差放大因子.<br />
+令人惊讶的是, 对于方阵有一个关于条件数的紧致的公式. 和向量范数类似, 定义
+<span class="math inline">\(n \times n\)</span> 矩阵 <span
+class="math inline">\(A\)</span> 的矩阵范数为<br />
+<span class="math display">\[
+\|A\|_{\infty}= 每行元素绝对值之和的最大值
+\]</span></p>
+<p>即每行元素绝对值求和, 并把 <span class="math inline">\(n\)</span>
+行求和的最大值作为矩阵 <span class="math inline">\(A\)</span>
+的范数.<br />
+$ n n$ 矩阵 <span class="math inline">\(A\)</span> 的条件数是</p>
+<p><span class="math display">\[
+\operatorname{cond}(A)=\|A\| \cdot\left\|A^{-1}\right\|
+\]</span></p>
+<p>2.淹没</p>
+<p>高斯消去法会因为第一列主元过小而导致大数小数相减而忽略小数引入误差</p>
+<p>PA=LU分解</p>
+<p>可以解决0主元和淹没的问题</p>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">function</span> PA_LU(m::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;)</span><br><span class="line">	println(<span class="string">&quot;PA_LU&quot;</span>)</span><br><span class="line">	n=length(m[<span class="number">1</span>,:])</span><br><span class="line">	L=zeros(n,n)+I</span><br><span class="line">	p=zeros(n,n)+I</span><br><span class="line">	order=collect(<span class="number">1</span>:n)</span><br><span class="line">	<span class="keyword">for</span> j <span class="keyword">in</span>  <span class="number">1</span> : n-<span class="number">1</span></span><br><span class="line">		<span class="comment">#L[j,j]=1</span></span><br><span class="line">		change_row=findmax(m[j:n,j])[<span class="number">2</span>]</span><br><span class="line">		<span class="keyword">if</span> change_row !=j</span><br><span class="line">			m[j,:],m[change_row,:]=m[change_row,:],m[j,:]</span><br><span class="line">			</span><br><span class="line">			order[j],order[change_row]=order[change_row],order[j]</span><br><span class="line">			</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> abs(m[j,j]) &lt; <span class="number">10</span>^-<span class="number">20</span></span><br><span class="line">			error(<span class="string">&quot;zero pivot encountered&quot;</span>)</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">		<span class="keyword">for</span> i <span class="keyword">in</span>  j+<span class="number">1</span>:n</span><br><span class="line">			</span><br><span class="line">			L[i,j]=  m[i,j]/m[j,j]</span><br><span class="line">			<span class="keyword">for</span> k = j : n</span><br><span class="line">				m[i,k] -= L[i,j]*m[j,k]  </span><br><span class="line">			<span class="keyword">end</span></span><br><span class="line">			</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">    <span class="keyword">if</span> order!=collect(<span class="number">1</span>:n)</span><br><span class="line">		p=p*Permutation_matrix(order)</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">return</span> p,L,m <span class="comment"># P L U</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">P,L,U=PA_LU(<span class="number">1.0</span>*[<span class="number">1</span> <span class="number">2</span> -<span class="number">1</span> ; <span class="number">2</span> <span class="number">1</span> -<span class="number">2</span> ; -<span class="number">3</span> <span class="number">1</span> <span class="number">1</span>])</span><br><span class="line">println(<span class="string">&quot;P: &quot;</span>),display(P)</span><br><span class="line">println(<span class="string">&quot;L: &quot;</span>),display(L)</span><br><span class="line">println(<span class="string">&quot;U: &quot;</span>),display(U)</span><br><span class="line">Pb=[i <span class="keyword">for</span> i <span class="keyword">in</span> P*[<span class="number">3</span>;<span class="number">3</span>;-<span class="number">6</span>]]</span><br><span class="line">println(<span class="string">&quot;Pb: &quot;</span>),display(Pb)</span><br><span class="line">println(LU_solve(L,U,Pb*<span class="number">1.0</span>))</span><br><span class="line">println(LU_solve(L,U,[<span class="number">3.0</span>  -<span class="number">6.0</span>  <span class="number">3.0</span>]))</span><br><span class="line"></span><br><span class="line">P,L,U=PA_LU(<span class="number">1.0</span>*[<span class="number">2</span> <span class="number">1</span> <span class="number">5</span> ; <span class="number">4</span> <span class="number">4</span> -<span class="number">4</span> ; <span class="number">1</span> <span class="number">3</span> <span class="number">1</span>])</span><br><span class="line">println(<span class="string">&quot;P: &quot;</span>),display(P)</span><br><span class="line">println(<span class="string">&quot;L: &quot;</span>),display(L)</span><br><span class="line">println(<span class="string">&quot;U: &quot;</span>),display(U)</span><br><span class="line">Pb=[i <span class="keyword">for</span> i <span class="keyword">in</span> P*[<span class="number">5</span>;<span class="number">0</span>;<span class="number">6</span>]]</span><br><span class="line">println(<span class="string">&quot;Pb: &quot;</span>),display(Pb)</span><br><span class="line">println(LU_solve(L,U,Pb*<span class="number">1.0</span>))</span><br></pre></td></tr></table></figure>
+<h2 id="雅可比方法">雅可比方法</h2>
+<p><span class="math display">\[
+\begin{split}
+&amp;x_0= 初始向量 \\
+&amp;x_{k+1}=D^{-1}\left(b-(L+U) x_k\right), k=0,1,2, \cdots
+\end{split}
+\]</span></p>
+<p>对于严格对角占优矩阵(<span class="math inline">\(\left|a_{i
+j}\right|&gt;\sum\limits_{i \neq j}\left|a_{i j}\right|\)</span>)
+是非奇异的且雅可比方法有唯一解</p>
+<h2 id="高斯-塞徳方法gauss-seidel">高斯-塞徳方法（Gauss-Seidel)</h2>
+<p><span class="math display">\[
+\begin{aligned}
+x_0 &amp; =\text { 初始向量 } \\
+x_{k+1} &amp; =D^{-1}\left(b-U x_k-L x_{k+1}\right), k=0,1,2, \cdots
+\end{aligned}
+\]</span></p>
+<h3 id="连续过松驰-sor">连续过松驰 (SOR)</h3>
+<p><span class="math display">\[
+\begin{aligned}
+x_0 &amp; =\text { 初始向量 } \\
+x_{k+1} &amp; =(\omega L+D)^{-1}\left[(1-\omega) D x_k-\omega U
+x_k\right]+\omega(D+\omega L)^{-1} b, k=0,1,2, \cdots
+\end{aligned}
+\]</span></p>
+<p>正如雅可比和高斯-塞德尔方法, 另一种导出 SOR
+的方法是将该系统看做不动点迭代. 问题 <span class="math inline">\(A
+x=b\)</span> 可以写成 <span class="math inline">\((L+D+U) x=b\)</span>,
+乘上 <span class="math inline">\(\omega\)</span> 并重新组织方程,<br />
+<span class="math display">\[
+\begin{aligned}
+(\omega L+\omega D+\omega U) x &amp; =\omega b \\
+(\omega L+D) x &amp; =\omega b-\omega U x+(1-\omega) D x \\
+x &amp; =(\omega L+D)^{-1}[(1-\omega) D x-\omega U x]+\omega(D+\omega
+L)^{-1} b
+\end{aligned}
+\]</span></p>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> L_inv(m::<span class="built_in">Matrix</span>&#123;<span class="built_in">Float64</span>&#125;,n::<span class="built_in">Int64</span>=length(m[<span class="number">1</span>,:]))</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>:n</span><br><span class="line">		m[i,i]= m[i,i]!=<span class="number">0</span> ?  <span class="number">1</span>/m[i,i] : <span class="number">0</span></span><br><span class="line">		<span class="keyword">for</span> j <span class="keyword">in</span> <span class="number">1</span>:i-<span class="number">1</span></span><br><span class="line">			</span><br><span class="line">				m[i,j]=-sum([ m[i,k]*m[k,j] <span class="keyword">for</span> k <span class="keyword">in</span> j:i-<span class="number">1</span>])*m[i,i] <span class="comment">#(1/m_ii)*sum(m_i,k*inv m_kj)</span></span><br><span class="line">			</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> m</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">function</span> SOR(a::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;,b::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;,w::<span class="built_in">Int64</span>=<span class="number">1</span>,k::<span class="built_in">Int64</span>=<span class="number">100</span>,eta::<span class="built_in">Float64</span>=<span class="number">10</span>^-<span class="number">6</span>)</span><br><span class="line">	<span class="keyword">if</span> w&lt;<span class="number">1</span> </span><br><span class="line">		error(<span class="string">&quot;w must be greater than 1 &quot;</span>)</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	n=length(b)</span><br><span class="line"></span><br><span class="line">	x=rand(n,<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">	D=zeros(n,n)</span><br><span class="line">	L=zeros(n,n)</span><br><span class="line">	U=zeros(n,n)</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>:n</span><br><span class="line">		<span class="keyword">for</span> j <span class="keyword">in</span> <span class="number">1</span>:n</span><br><span class="line">			<span class="keyword">if</span> i==j</span><br><span class="line">				D[i,j]=a[i,j]</span><br><span class="line">			<span class="keyword">elseif</span> i&lt;j</span><br><span class="line">				U[i,j]=a[i,j]</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				L[i,j]=a[i,j]</span><br><span class="line">			<span class="keyword">end</span></span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	println(n)</span><br><span class="line">	wLD_inv=</span><br><span class="line">    L_inv((w*L+D),n)</span><br><span class="line">	</span><br><span class="line">	w_wLD_inv_b=w*wLD_inv*(b&#x27;)</span><br><span class="line">	wd=(<span class="number">1</span>-w)*D-w*U</span><br><span class="line">	display(wd)</span><br><span class="line">	display(wLD_inv*(w*L+D))</span><br><span class="line">	display(w_wLD_inv_b)</span><br><span class="line">	display(wLD_inv)</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>:k</span><br><span class="line">		x=wLD_inv*(wd*x)+w_wLD_inv_b</span><br><span class="line">		</span><br><span class="line">		r=sum([i^<span class="number">2</span> <span class="keyword">for</span> i <span class="keyword">in</span> (a*x-b&#x27;)])^<span class="number">0.5</span></span><br><span class="line">		println(<span class="string">&quot;r &quot;</span>,r)</span><br><span class="line">		<span class="keyword">if</span>  r &lt;eta</span><br><span class="line">			println(<span class="string">&quot;SOR convergence in &quot;</span>,i,<span class="string">&quot; step&quot;</span>)</span><br><span class="line">			<span class="keyword">return</span> x&#x27;			</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> x&#x27;</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">println(SOR(<span class="number">1.0</span>*[<span class="number">3</span> -<span class="number">1</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0.5</span>; -<span class="number">1</span> <span class="number">3</span> -<span class="number">1</span> <span class="number">0</span> <span class="number">0.5</span> <span class="number">0</span>;<span class="number">0</span> -<span class="number">1</span> <span class="number">3</span> -<span class="number">1</span> <span class="number">0</span> <span class="number">0</span> ;<span class="number">0</span> <span class="number">0</span> -<span class="number">1</span> <span class="number">3</span> -<span class="number">1</span> <span class="number">0</span> ;<span class="number">0</span> <span class="number">0.5</span> <span class="number">0</span> -<span class="number">1</span> <span class="number">3</span> -<span class="number">1</span> ; <span class="number">0.5</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> -<span class="number">1</span> <span class="number">3</span>],[<span class="number">5</span>/<span class="number">2.0</span> <span class="number">3</span>/<span class="number">2.0</span> <span class="number">1.0</span> <span class="number">1.0</span> <span class="number">3</span>/<span class="number">2.0</span> <span class="number">5</span>/<span class="number">2.0</span>]*<span class="number">1.0</span>))</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>迭代法可以用来求稀疏矩阵比较有效</p>
+<h3 id="非线性方程组">非线性方程组</h3>
+<p><span class="math display">\[
+\begin{aligned}
+f_1(x_1, x_2,..., x_n)&amp;=0 \\
+f_2(x_1, x_2,..., x_n)&amp;=0 \\
+\vdots\\
+f_m(x_1, x_2,..., x_n)&amp;=0
+\end{aligned}
+\]</span></p>
+<h4 id="多变量牛顿法">多变量牛顿法</h4>
+<p>类似牛顿法直接用雅可比矩阵迭代求解</p>
+<h4 id="broyden方法">Broyden方法</h4>
+<p><span class="math display">\[
+\begin{aligned}
+&amp; x_0=\text { 初始向量 } \\
+&amp; A_0=\text { 初始矩阵 } \\
+&amp; \text { for } i=0,1,2, \cdots \\
+&amp; \qquad x_{i+1}=x_i-A_i^{-1} F\left(x_i\right) \\
+&amp; \qquad A_{i+1}=A_i+\frac{\left(\Delta_{i+1}-A_i
+\delta_{i+1}\right) \delta_{i+1}^{\mathrm{T}}}{\delta_{i+1}^{\mathrm{T}}
+\delta_{i+1}}
+\end{aligned}\notag
+\]</span><br />
+其中 <span class="math inline">\(\delta_{i+1}=x_{i+1}-x_i,
+\Delta_{i+1}=F\left(x_{i+1}\right)-F\left(x_i\right)\)</span></p>
+<h4 id="broyden-方法ii">Broyden 方法II</h4>
+<p><span class="math display">\[
+\begin{aligned}
+&amp; x_0=\text { 初始向量 } \\
+&amp; B_0=\text { 初始矩阵 } \\
+&amp; \text { for } i=0,1,2, \cdots \\
+&amp; \qquad x_{i+1}=x_i-B_i F\left(x_i\right) \\
+&amp; \qquad B_{i+1}=B_i+\frac{\left(\delta_{i+1}-B_i
+\Delta_{i+1}\right) \delta_{i+1}^{\mathrm{T}}
+B_i}{\delta_{i+1}^{\mathrm{T}} B_i \Delta_{i+1}}
+\end{aligned}\notag
+\]</span><br />
+其中 <span class="math inline">\(\delta_{i+1}=x_{i+1}-x_i,
+\Delta_{i+1}=F\left(x_{i+1}\right)-F\left(x_i\right)\)</span></p>
+<h2 id="插值">插值</h2>
+<p>定理 3.4 假设 <span class="math inline">\(P(x)\)</span> 是 <span
+class="math inline">\(n-1\)</span> 或者更低阶的插值多项式, 其拟合 <span
+class="math inline">\(n\)</span> 个点 <span
+class="math inline">\(\left(x_1, y_1\right), \cdots\)</span>, <span
+class="math inline">\(\left(x_n, y_n\right)\)</span>. 插值误差是<br />
+<span class="math display">\[
+f(x)-P(x)=\frac{\left(x-x_1\right)\left(x-x_2\right)
+\cdots\left(x-x_n\right)}{n !} f^{(n)}(c)
+\]</span><br />
+其中 <span class="math inline">\(c\)</span> 在最小和最大的 <span
+class="math inline">\(n+1\)</span> 个数字 <span class="math inline">\(x,
+x_1, \cdots, x_n\)</span> 之间.</p>
+<h3 id="拉格朗日插值">拉格朗日插值</h3>
+<p>一般来说, 如果我们有 <span class="math inline">\(n\)</span> 个点
+<span class="math inline">\(\left(x_1, y_1\right), \cdots,\left(x_n,
+y_n\right)\)</span>. 对于 <span class="math inline">\(1 \sim n\)</span>
+之间的每个 <span class="math inline">\(k\)</span>, 定 义 <span
+class="math inline">\(n-1\)</span> 次多项式<br />
+<span class="math display">\[
+L_k(x)=\frac{\left(x-x_1\right)
+\cdots\left(x-x_{k-1}\right)\left(x-x_{k+1}\right)
+\cdots\left(x-x_n\right)}{\left(x_k-x_1\right)
+\cdots\left(x_k-x_{k-1}\right)\left(x_k-x_{k+1}\right)
+\cdots\left(x_k-x_n\right)}
+\]</span><br />
+<span class="math inline">\(L_k\)</span> 具有一个有趣的性质, 即 <span
+class="math inline">\(L_k\left(x_k\right)=1\)</span>, 而 <span
+class="math inline">\(L_k\left(x_j\right)=0\)</span>, 其中 <span
+class="math inline">\(x_j\)</span> 是任何一个其他的数据 点. 然后定义了
+<span class="math inline">\(n-1\)</span> 次多项式<br />
+<span class="math display">\[
+P_{n-1}(x)=y_1 L_1(x)+\cdots+y_n L_n(x)
+\]</span><br />
+这是对 (3.1) 中多项式直接的推广, 并以相同的方式工作. 用 <span
+class="math inline">\(x_k\)</span> 替代 <span
+class="math inline">\(x\)</span> 得到<br />
+<span class="math display">\[
+P_{n-1}\left(x_k\right)=y_1 L_1\left(x_k\right)+\cdots+y_n
+L_n\left(x_k\right)=0+\cdots+0+y_k L_k\left(x_k\right)+0+\cdots+0=y_k
+\]</span><br />
+可以看出该多项式满足设计要求.</p>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> Lagrange_inter(x0::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;,y0::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;)</span><br><span class="line">	<span class="keyword">return</span> x-&gt; sum([ y0[j]*mapreduce(m-&gt;m,*,[(x-x0[i])/(x0[j]-x0[i]) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>:length(y0) <span class="keyword">if</span> i!= j ])  <span class="keyword">for</span> j <span class="keyword">in</span> <span class="number">1</span>:length(y0)])</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">f_Lagrange=Lagrange_inter([<span class="number">0.0</span> <span class="number">2.0</span> <span class="number">3</span>],[<span class="number">1.0</span> <span class="number">2</span> <span class="number">4</span>])</span><br><span class="line">println(ff(<span class="number">1.0</span>))</span><br></pre></td></tr></table></figure>
+<h3 id="牛顿差商">牛顿差商</h3>
+<p><span class="math display">\[
+\begin{aligned}
+f\left[x_k\right] &amp; =f\left(x_k\right) \\
+f\left[x_k x_{k+1}\right] &amp;
+=\frac{f\left[x_{k+1}\right]-f\left[x_k\right]}{x_{k+1}-x_k} \\
+f\left[x_k x_{k+1} x_{k+2}\right] &amp; =\frac{f\left[x_{k+1}
+x_{k+2}\right]-f\left[x_k x_{k+1}\right]}{x_{k+2}-x_k} \\
+f\left[\begin{array}{lll}
+x_k x_{k+1} &amp; x_{k+2} &amp; x_{k+3}
+\end{array}\right] &amp; =\frac{f\left[x_{k+1} x_{k+2}
+x_{k+3}\right]-f\left[x_k x_{k+1} x_{k+2}\right.}{x_{k+3}-x_k}
+\end{aligned}
+\]</span></p>
+<p><span class="math display">\[
+\begin{array}{l|lll}
+x_1 &amp; f\left[x_1\right] &amp; \\
+&amp; &amp; f\left[\begin{array}{ll}
+x_1 x_2
+\end{array}\right] &amp; \\
+x_2 &amp; f\left[x_2\right] &amp; &amp; f\left[\begin{array}{lll}
+x_1 &amp; x_2 &amp; x_3
+\end{array}\right] \\
+&amp; &amp; f\left[x_2 x_3\right] &amp; \\
+x_3 &amp; f\left[x_3\right] &amp;
+\end{array}
+\]</span></p>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> newtdd(x::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;,y::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;)</span><br><span class="line">	n = length(x)</span><br><span class="line">	v = zeros(n,n)</span><br><span class="line">	<span class="keyword">for</span> j <span class="keyword">in</span> <span class="number">1</span>:n</span><br><span class="line">		v[j,<span class="number">1</span>]=y[j]</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">2</span>:n</span><br><span class="line"></span><br><span class="line">		<span class="keyword">for</span> j <span class="keyword">in</span> <span class="number">1</span>: n+<span class="number">1</span>-i</span><br><span class="line">			v[j,i]= (v[j+<span class="number">1</span>,i-<span class="number">1</span>]-v[j,i-<span class="number">1</span>])/(x[j+i-<span class="number">1</span>]-x[j])</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span>(v[<span class="number">1</span>,:])</span><br></pre></td></tr></table></figure>
+<h3 id="切比雪夫插值节点">切比雪夫插值节点</h3>
+<p>在区间 <span class="math inline">\([a, b]\)</span>,<br />
+<span class="math display">\[
+x_i=\frac{b+a}{2}+\frac{b-a}{2} \cos \frac{(2 i-1) \pi}{2 n}
+\]</span><br />
+<span class="math inline">\(i=1, \cdots, n\)</span> ，不等式<br />
+<span class="math display">\[
+\left|\left(x-x_1\right) \cdots\left(x-x_n\right)\right| \leqslant
+\frac{\left(\frac{b-a}{2}\right)^n}{2^{n-1}}
+\]</span><br />
+在区间 <span class="math inline">\([a, b]\)</span> 上成立.</p>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> mysin(x::<span class="built_in">Float64</span>,n::<span class="built_in">Int64</span>=<span class="number">10</span>)</span><br><span class="line">	xsin= [ <span class="literal">pi</span>/<span class="number">4</span> + (<span class="literal">pi</span>/<span class="number">4</span>)* cos(i*<span class="literal">pi</span>/(<span class="number">2</span>*n)) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">2</span>:<span class="number">2</span>*n-<span class="number">1</span>]</span><br><span class="line">	ysin= map(sin,xsin)</span><br><span class="line">	c= newtdd(xsin,ysin)</span><br><span class="line">	s=<span class="number">1</span></span><br><span class="line">	x1=mod(x,<span class="number">2</span>*<span class="literal">pi</span>)</span><br><span class="line">	<span class="keyword">if</span> x1&gt;<span class="literal">pi</span></span><br><span class="line">		x1= <span class="number">2</span>*<span class="literal">pi</span>-x1</span><br><span class="line">		s=-<span class="number">1</span></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">if</span> x1 &gt; <span class="literal">pi</span>/<span class="number">2</span></span><br><span class="line">		x1 = <span class="literal">pi</span> - x1</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> s*hornor(x1,n-<span class="number">1</span>,c,xsin)  <span class="comment">#hornor(x::Float64,n::Int64,c::Vector&#123;Float64&#125;=[1. for  i in 1:n+1],b::Vector&#123;Float64&#125;=[0. for  i in 1:n+1])</span></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">println(sin(<span class="number">10</span>),<span class="string">&quot; &quot;</span>,mysin(<span class="number">10.0</span>))</span><br></pre></td></tr></table></figure>
+<h3 id="三次样条插值">三次样条插值</h3>
+<p>为了更加精确地定义三次样条的性质, 我们做出如下的定义: 假设给定 <span
+class="math inline">\(n\)</span> 个点 <span
+class="math inline">\(\left(x_1\right.\)</span>, <span
+class="math inline">\(\left.y_1\right), \cdots,\left(x_n,
+y_n\right)\)</span>, 其中 <span class="math inline">\(x_i\)</span> 不同,
+并且升序. 通过点 <span class="math inline">\(\left(x_1, y_1\right),
+\cdots,\left(x_n, y_n\right)\)</span> 的三次样 条 <span
+class="math inline">\(S(x)\)</span> 是一组三次多项式<br />
+<span class="math display">\[
+\begin{aligned}
+S_1(x) &amp;
+=y_1+b_1\left(x-x_1\right)+c_1\left(x-x_1\right)^2+d_1\left(x-x_1\right)^3
+\text { 在区间 }\left[x_1, x_2\right] \text { 上 } \\
+S_2(x) &amp;
+=y_2+b_2\left(x-x_2\right)+c_2\left(x-x_2\right)^2+d_2\left(x-x_2\right)^3
+\text { 在区间 }\left[x_2, x_3\right] \text { 上 } \\
+&amp; \vdots \\
+S_{n-1}(x) &amp;
+=y_{n-1}+b_{n-1}\left(x-x_{n-1}\right)+c_{n-1}\left(x-x_{n-1}\right)^2+d_{n-1}\left(x-x_{n-1}\right)^3
+\text { 在区间 }\left[x_{n-1}, x_n\right] \text { 上 }
+\end{aligned}
+\]</span><br />
+并具有如下性质:<br />
+性质 1 $ S_i(x_i)=y_i, S_i(x_{i+1})=y_{i+1}$, 其中 <span
+class="math inline">\(i=1, \cdots, n-1\)</span>.<br />
+性质 2 $ S_{i-1}<sup>{}(x_i)=S_i</sup>{}(x_i)$, 其中 <span
+class="math inline">\(i=2, \cdots, n-1\)</span>.<br />
+性质 3 $ S_{i-1}<sup>{}(x_i)=S_i</sup>{}(x_i)$, 其中 <span
+class="math inline">\(i=2, \cdots, n-1\)</span>.<br />
+性质 1 保证样条 <span class="math inline">\(S(x)\)</span> 插值数据点.
+性质 2 使得相邻的样条段在它们相遇的地方斜率相 同, 性质 3
+则保证在两条样条段相邻的地方曲率相同, 该曲率由二阶导数表示.</p>
+<p>这三个性质只能提供3n-5个独立方程
+所以要给出一个确定的样条插值需要添加额外的性质 从而构成了不同的样条</p>
+<h4 id="自然样条">自然样条</h4>
+<p>性质 4a $ S_{1}<sup>{}(x_1)=0,S_{n-1}</sup>{}(x_n)=0$</p>
+<p>使用自然样条条件 (性质 <span class="math inline">\(4 a\)</span> )
+可以得到另外的两个方程:<br />
+<span class="math display">\[
+\begin{aligned}
+S_1^{\prime \prime}\left(x_1\right) &amp; =0 \rightarrow 2 c_1=0 \\
+S_{n-1}^{\prime \prime}\left(x_n\right) &amp; =0 \rightarrow 2 c_n=0
+\end{aligned}
+\]</span><br />
+引人额外的未知变量 <span class="math inline">\(c_n=S_{n-1}^{\prime
+\prime}\left(x_n\right) / 2\)</span>, 计算会更简单. 同时,
+我们引人速记表示法 <span class="math inline">\(\delta_i=x_{i+1}-x_i,
+\Delta_i=y_{i+1}-y_i\)</span></p>
+<p>对于 <span class="math inline">\(n\)</span> 个未知变量 <span
+class="math inline">\(c_i\)</span>, 一共给出了 <span
+class="math inline">\(n\)</span> 个方程, 可以写成矩阵形式<br />
+<span class="math display">\[
+\left[\begin{array}{cccccc}
+1 &amp; 0 &amp; 0 &amp; &amp; &amp; \\
+\delta_1 &amp; 2 \delta_1+2 \delta_2 &amp; \delta_2 &amp; \ddots &amp;
+&amp; \\
+0 &amp; \delta_2 &amp; 2 \delta_2+2 \delta_3 &amp; \delta_3 &amp; &amp;
+\\
+&amp; \ddots &amp; \ddots &amp; \ddots &amp; \ddots &amp; \\
+&amp; &amp; &amp; \delta_{n-2} &amp; 2 \delta_{n-2}+2 \delta_{n-1} &amp;
+\delta_{n-1} \\
+&amp; &amp; &amp; 0 &amp; 0 &amp; 1
+\end{array}\right]\left[\begin{array}{c}
+c_1 \\
+\vdots \\
+c_n
+\end{array}\right]=\left[\begin{array}{c}
+0 \\
+3\left(\frac{\Delta_2}{\delta_2}-\frac{\Delta_1}{\delta_1}\right) \\
+3\left(\frac{\Delta_{n-1}}{\delta_{n-1}}-\frac{\Delta_{n-2}}{\delta_{n-2}}\right)
+\\
+0
+\end{array}\right]
+\]</span></p>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> Spline_Interpolation(x::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;, y::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;)</span><br><span class="line">	n = length(x)</span><br><span class="line">	</span><br><span class="line">	delta=[(x[i+<span class="number">1</span>] - x[i], y[i+<span class="number">1</span>] -y[i]) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>:n-<span class="number">1</span>]</span><br><span class="line">	</span><br><span class="line">	m=zeros(n,n)</span><br><span class="line">	m[<span class="number">1</span>,<span class="number">1</span>]=<span class="number">1</span></span><br><span class="line">	m[n,n]=<span class="number">1</span></span><br><span class="line">	b=zeros(n,<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">for</span>  i <span class="keyword">in</span> <span class="number">2</span>:n-<span class="number">1</span></span><br><span class="line">	</span><br><span class="line">		m[i,i-<span class="number">1</span>], m[i,i] ,m[i,i+<span class="number">1</span>] = delta[i-<span class="number">1</span>][<span class="number">1</span>] , <span class="number">2</span>*delta[i-<span class="number">1</span>][<span class="number">1</span>] + <span class="number">2</span>*delta[i][<span class="number">1</span>] ,delta[i][<span class="number">1</span>]</span><br><span class="line">		</span><br><span class="line">		b[i]= <span class="number">3</span>* (delta[i][<span class="number">2</span>]/delta[i][<span class="number">1</span>] -delta[i-<span class="number">1</span>][<span class="number">2</span>]/delta[i-<span class="number">1</span>][<span class="number">1</span>])</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	c=m\b</span><br><span class="line">	</span><br><span class="line">	d=zeros(<span class="number">1</span>,n)</span><br><span class="line">	b=zeros(<span class="number">1</span>,n)</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>:n-<span class="number">1</span></span><br><span class="line">		d[i]=(c[i+<span class="number">1</span>]-c[i])/(<span class="number">3</span>*delta[i][<span class="number">1</span>])<span class="comment">#[((c[i+1]-c[i])/(3*delta[i][1]), delta[i][2]/delta[i][1] - delta[i][1](2* c[i] + c[i+1])/3) for i in 1:n-1]</span></span><br><span class="line">		b[i]=delta[i][<span class="number">2</span>]/delta[i][<span class="number">1</span>] - delta[i][<span class="number">1</span>]*(<span class="number">2</span>* c[i] + c[i+<span class="number">1</span>])/<span class="number">3</span></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"><span class="keyword">return</span> y , b , c ,d</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">println(Spline_Interpolation([<span class="number">0</span> <span class="number">1</span> <span class="number">2</span>]*<span class="number">1.0</span>,[<span class="number">3</span> -<span class="number">2</span> <span class="number">1</span>]*<span class="number">1.0</span>))</span><br></pre></td></tr></table></figure>
+<h3 id="贝塞尔曲线">贝塞尔曲线</h3>
+<h2 id="最小二乘法">最小二乘法</h2>
+<p>首先提一句julia中 <code>\</code>函数可以求解线性方程组<span
+class="math inline">\(A x = b\)</span> ，其中<span
+class="math inline">\(A\)</span>是方阵</p>
+<p>当A的行数大于列数时，<code>\</code>函数可以计算超定方程的最小二乘解</p>
+<h3 id="法线方程">法线方程</h3>
+<p>最小二乘的法线方程<br />
+对于不一致系统<br />
+<span class="math display">\[
+A x=b
+\]</span><br />
+求解 <span class="math inline">\(\bar{x}\)</span> 的计算公式如下.
+我们已经知道<br />
+<span class="math display">\[
+(b-A \bar{x}) \perp\left\{A x \mid x \in R^n\right\}
+\]</span><br />
+把垂直性表示为矩阵的乘法, 我们发现对于 <span
+class="math inline">\(R^n\)</span> 上所有的 <span
+class="math inline">\(x\)</span>,<br />
+<span class="math display">\[
+(A x)^{\mathrm{T}}(b-A \bar{x})=0
+\]</span><br />
+使用前面关于转置的事实, 我们可以重写该式子, 即对于 <span
+class="math inline">\(R^n\)</span> 上所有的 <span
+class="math inline">\(x\)</span>,<br />
+<span class="math display">\[
+x^{\mathrm{T}} A^{\mathrm{T}}(b-A \bar{x})=0
+\]</span><br />
+求解<br />
+<span class="math display">\[
+A^{\mathrm{T}} A \bar{x}=A^{\mathrm{T}} b
+\]</span><br />
+得到的 <span class="math inline">\(\bar{x}\)</span>, 就是最小二乘解,
+它可以最小化余项 <span class="math inline">\(r=b-A x\)</span>
+的欧氏长度.</p>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> least_sqaure(a::(<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;),b::<span class="built_in">Array</span>&#123;<span class="built_in">Float64</span>&#125;)</span><br><span class="line"></span><br><span class="line">	A=a&#x27;*a</span><br><span class="line">	ab=a&#x27;*b&#x27;</span><br><span class="line">	P,L,U=PA_LU(A)</span><br><span class="line">	Pb=[i <span class="keyword">for</span> i <span class="keyword">in</span> P*ab]</span><br><span class="line">	<span class="keyword">return</span> LU_solve(L,U,Pb*<span class="number">1.0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<h3 id="qr-分解">QR 分解</h3>
+<h4 id="经典格拉姆-施密特正交">经典格拉姆-施密特正交</h4>
+令 <span class="math inline">\(A_j(j=1, \cdots, n)\)</span>
+为线性无关向量.<br />
+$$<br />
+
+<span class="math display">\[\begin{gathered}
+
+\begin{array}{l}
+\text { for } j=1,2, \cdots, n \\
+\quad \quad y=A_j \\
+\quad \quad \text { for } i=1,2, \cdots, j-1 \\
+\quad \quad \quad r_{i j}=q_i^{\mathrm{T}} A_j \\
+\quad \quad \quad y=y-r_{i j} q_i\\
+\quad  \quad  \text { end } \\
+
+
+%\begin{array}{l}
+\quad  \quad  y=\|y \|_2 \\
+\quad  \quad  r_{j j}=y / r_{j j}\\
+   \text { end }
+%\end{array}
+\end{array} \\
+\end{gathered} \notag\]</span>
+<p>$$</p>
+<h4 id="改进格拉姆-施密特正交">改进格拉姆-施密特正交</h4>
+<p><span class="math display">\[
+\begin{gathered}
+\begin{array}{l}
+\text { for } j=1,2, \cdots, n \\
+\quad \quad y=A_j \\
+\quad \quad \text { for } i=1,2, \cdots, j-1 \\
+\quad \quad \quad r_{i j}=q_i^{\mathrm{T}} y \\
+\quad \quad \quad y=y-r_{i j} q_i\\
+\quad  \quad  \text { end } \\%\begin{array}{l}
+\quad  \quad  y=\|y \|_2 \\
+\quad  \quad  r_{j j}=y / r_{j j}\\   
+\text { end }%\end{array}
+\end{array} \\
+\end{gathered} \notag
+\]</span></p>
+<h4 id="豪斯霍尔徳-方法">豪斯霍尔徳 方法</h4>
+<p>豪斯霍尔德反射子令 <span class="math inline">\(x\)</span> 和 <span
+class="math inline">\(w\)</span> 是向量, <span
+class="math inline">\(\|x\|_2=\|w\|_2\)</span>, 并定义 <span
+class="math inline">\(v=w-\)</span> <span
+class="math inline">\(x\)</span>. 则 <span class="math inline">\(H=I-2 v
+v^{\mathrm{T}} / v^{\mathrm{T}}\)</span> 是对称正交矩阵, 并且 <span
+class="math inline">\(H x=w\)</span>.</p>
+<p>求出A矩阵每列向量的豪斯霍尔徳反射子H 得到 Q= H1 H2 H3 R= H3 H2 H1(
+如果矩阵是列数为3的话)</p>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">function</span> Householder(x::<span class="built_in">Vector</span>&#123;<span class="built_in">Float64</span>&#125;,w::<span class="built_in">Vector</span>&#123;<span class="built_in">Float64</span>&#125;)</span><br><span class="line">	v=w-x</span><br><span class="line">	P= v* (v&#x27;)/(v&#x27;*v)</span><br><span class="line">	<span class="keyword">return</span> I- <span class="number">2</span>*P</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> QR(m::<span class="built_in">Matrix</span>&#123;<span class="built_in">Float64</span>&#125;,method::<span class="built_in">String</span>=<span class="string">&quot;QR class&quot;</span>)</span><br><span class="line">	n=size(m)</span><br><span class="line">	Q=zeros(n[<span class="number">1</span>],n[<span class="number">2</span>])</span><br><span class="line">	Q[:,<span class="number">1</span>]=m[:,<span class="number">1</span>]</span><br><span class="line">	r=zeros(n[<span class="number">1</span>],n[<span class="number">2</span>])</span><br><span class="line">	println(method)</span><br><span class="line">	<span class="keyword">if</span> method ==<span class="string">&quot;Householder method&quot;</span></span><br><span class="line">		H=I+zeros(n[<span class="number">1</span>],n[<span class="number">1</span>])</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> j <span class="keyword">in</span> <span class="number">1</span>:n[<span class="number">2</span>]</span><br><span class="line">		<span class="keyword">if</span> method == <span class="string">&quot;Householder method&quot;</span></span><br><span class="line">			H2=I +zeros(n[<span class="number">1</span>],n[<span class="number">1</span>])</span><br><span class="line">	 		H2[j:n[<span class="number">1</span>],j:n[<span class="number">1</span>]] =Householder(m[j:n[<span class="number">1</span>],j],[k== j ? norm(m[j:n[<span class="number">1</span>],j]) : <span class="number">0.0</span> <span class="keyword">for</span> k <span class="keyword">in</span> j:n[<span class="number">1</span>]])</span><br><span class="line">	 		H= H*H2</span><br><span class="line">	 		m=H2*m</span><br><span class="line">			</span><br><span class="line">		<span class="keyword">else</span> </span><br><span class="line">			y=m[:,j]</span><br><span class="line">			<span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>:j-<span class="number">1</span></span><br><span class="line"></span><br><span class="line">				r[i,j] =  method ==<span class="string">&quot;QR class&quot;</span> ? Q[:,i]&#x27; *m[:,j] :  Q[:,i]&#x27; *y</span><br><span class="line">				y= y- r[i,j]* Q[:,i]</span><br><span class="line">			<span class="keyword">end</span></span><br><span class="line">			r[j,j]=  sqrt(sum([ i^<span class="number">2</span> <span class="keyword">for</span> i <span class="keyword">in</span> y ]))<span class="comment">#norm(y)</span></span><br><span class="line">			Q[:,j]= y/r[j,j]</span><br><span class="line"></span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> method ==<span class="string">&quot;Householder method&quot;</span></span><br><span class="line">		Q,r =H , m</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> Q ,r</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Q,r = QR([<span class="number">1</span> -<span class="number">4</span> ; <span class="number">2</span> <span class="number">3</span> ;<span class="number">2</span> <span class="number">2</span> ]*<span class="number">1.0</span>,<span class="string">&quot;QR class&quot;</span>)</span><br><span class="line">display(Q)</span><br><span class="line">display(r)</span><br><span class="line">Q,r = QR([<span class="number">1</span> -<span class="number">4</span> ; <span class="number">2</span> <span class="number">3</span> ;<span class="number">2</span> <span class="number">2</span> ]*<span class="number">1.0</span>,<span class="string">&quot;QR&quot;</span>)</span><br><span class="line">display(Q)</span><br><span class="line">display(r)</span><br><span class="line"></span><br><span class="line">Q,r = QR([<span class="number">1</span> -<span class="number">4</span> ; <span class="number">2</span> <span class="number">3</span> ;<span class="number">2</span> <span class="number">2</span> ]*<span class="number">1.0</span>,<span class="string">&quot;Householder method&quot;</span>)</span><br><span class="line">display(Q)</span><br><span class="line">display(r)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4 id="通过-q-r-分解实现最小二乘">通过 <span class="math inline">\(Q
+R\)</span> 分解实现最小二乘</h4>
+<p>给定 <span class="math inline">\(m \times n\)</span> 不一致系统<br />
+<span class="math display">\[
+A x=b
+\]</span><br />
+找出完全 <span class="math inline">\(Q R\)</span> 分解 <span
+class="math inline">\(A=Q R\)</span>, 令<span
+class="math inline">\(\hat{R}=R\)</span> 的上 <span
+class="math inline">\(n \times n\)</span> 子矩阵<span
+class="math inline">\(\hat{d}=d=Q^{\mathrm{T}} b\)</span> 的上面的 <span
+class="math inline">\(n\)</span> 个元素 求解 <span
+class="math inline">\(\hat{R} \bar{x}=\hat{d}\)</span> 得到最小二乘解
+<span class="math inline">\(\bar{x}\)</span>.</p>
+<h3 id="非线性最小二乘法">非线性最小二乘法</h3>
+<p>高斯-牛顿方法的重要应用是拟合具有非线性系数的模型. 令 <span
+class="math inline">\(\left(t_1, y_1\right), \cdots,\left(t_m,
+y_m\right)\)</span> 是数据点, <span
+class="math inline">\(y=f_c(x)\)</span> 是要进行拟合函数, 其中 <span
+class="math inline">\(c=\left[c_1, \cdots, c_p\right]\)</span>
+是一组选择的参数, 用以最小化余项的平方和<br />
+<span class="math display">\[
+\begin{gathered}
+r_1(c)=f_c\left(t_1\right)-y_1 \\
+\vdots \\
+r_m(c)=f_c\left(t_m\right)-y_m
+\end{gathered}
+\]</span><br />
+的特定情况被更一般地看待, 以保证这里的特殊处理.</p>
+<h4 id="高斯一牛顿方法">高斯一牛顿方法</h4>
+<p>忽略了二阶导（海森矩阵）</p>
+<p>为了最小化<br />
+<span class="math display">\[
+r_1(x)^2+\cdots+r_m(x)^2 \notag
+\]</span><br />
+令 <span class="math inline">\(x^0=\)</span> 初始向量,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text { for } k=0,1 ， 2 \text {, } \cdots \\
+A &amp; =\operatorname{Dr}\left(x^k\right) \\
+A^{\mathrm{T}} A v^k &amp; =-A^{\mathrm{T}} r\left(x^k\right) \\
+x^{k+1} &amp; =x^k+v^k \\
+\text{end}
+\end{aligned} \notag
+\]</span></p>
+<h4 id="levenberg-marquardt-方法">Levenberg-Marquardt 方法</h4>
+<p>为了最小化<br />
+<span class="math display">\[
+r_1(x)^2+\cdots+r_m(x)^2 \notag
+\]</span><br />
+令 <span class="math inline">\(x^0=\)</span> 初始向量,<span
+class="math inline">\(\lambda =\)</span> 常数<br />
+<span class="math display">\[
+\begin{aligned}
+\text { for } k=0,1 ， 2 \text {, } \cdots \\
+A &amp; =\operatorname{Dr}\left(x^k\right) \\
+(A^{\mathrm{T}} A + \lambda diag(A^{\mathrm{T}} A))v^k &amp;
+=-A^{\mathrm{T}} r\left(x^k\right) \\
+x^{k+1} &amp; =x^k+v^k \\
+\text{end}
+\end{aligned} \notag
+\]</span></p>
+<h2 id="数值微分和积分">数值微分和积分</h2>
+<h4 id="积分">积分</h4>
+<h5 id="复合梯形法则">复合梯形法则</h5>
+<p><span class="math display">\[
+\int_a^b f(x) \mathrm{d} x=\frac{h}{2}\left(y_0+y_m+2 \sum_{i=1}^{n-1}
+y_i\right)-\frac{(b-a) h^2}{12} f^{\prime \prime}(c)
+\]</span><br />
+其中 <span class="math inline">\(h=(b-a) / m, c\)</span> 在 <span
+class="math inline">\(a\)</span> 和 <span
+class="math inline">\(b\)</span> 之间.</p>
+<p>推导思路对二个点进行拉格朗日插值 再积分 得到</p>
+<h5 id="复合辛普森公式">复合辛普森公式</h5>
+<p><span class="math display">\[
+\int_a^b f(x) \mathrm{d} x=\frac{h}{3}\left[y_0+y_{2 m}+4 \sum_{i=1}^m
+y_{2 i-1}+2 \sum_{i=1}^{m-1} y_{2 i}\right]-\frac{(b-a) h^4}{180}
+f^{(4)}(c)
+\]</span><br />
+其中$h=(b-a) / m $ c 在 <span class="math inline">\(a\)</span> 和 <span
+class="math inline">\(b\)</span> 之间.</p>
+<p>辛普森公式推导思路对三个点进行拉格朗日插值 在积分 得到</p>
+<h5 id="复合中点法则">复合中点法则</h5>
+<p><span class="math display">\[
+\int_a^b f(x) \mathrm{d} x=h \sum_{i=1}^m w_{i}+\frac{(b-a) h^2}{24}
+f^{\prime \prime}(c)
+\]</span></p>
+<p>其中$h=(b-a) / m $ <span class="math inline">\(w_{i}\)</span> 是 在
+a-b 中 m个相等子区间的中点 c 在 <span class="math inline">\(a\)</span>
+和 <span class="math inline">\(b\)</span> 之间.</p>
+<h5 id="龙贝格积分romberg-quadrature-formula">龙贝格积分Romberg
+quadrature formula</h5>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> romberg(f::<span class="built_in">Function</span>,a::<span class="built_in">Float64</span>,b::<span class="built_in">Float64</span>,n::<span class="built_in">Int64</span>,tol::<span class="built_in">Float64</span>=<span class="number">10</span>^-<span class="number">10</span>)</span><br><span class="line">	l=b-a</span><br><span class="line">	r=zeros(<span class="built_in">Float64</span>,n,n)</span><br><span class="line">	r[<span class="number">1</span>,<span class="number">1</span>]=(l)*(f(a)+f(b))/<span class="number">2</span></span><br><span class="line">	<span class="comment">#r=[ (l)*(f(a)+f(b))/2]</span></span><br><span class="line">	h= l</span><br><span class="line">	<span class="meta">@simd</span> <span class="keyword">for</span> j <span class="keyword">in</span> <span class="number">2</span>:n</span><br><span class="line">		h = h/<span class="number">2</span></span><br><span class="line">		r[j,<span class="number">1</span>]=<span class="number">0.5</span>* r[j-<span class="number">1</span>,<span class="number">1</span>] + h * sum([ f(a+(<span class="number">2</span>*i-<span class="number">1</span>)*h)   <span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">2</span>^(j-<span class="number">2</span>)] )</span><br><span class="line">		<span class="meta">@simd</span> <span class="keyword">for</span> k <span class="keyword">in</span> <span class="number">2</span>:j</span><br><span class="line"></span><br><span class="line">			r[j,k]=(<span class="number">4</span>^(k-<span class="number">1</span>) * r[j,k-<span class="number">1</span>] -r[j-<span class="number">1</span>,k-<span class="number">1</span>])/(<span class="number">4</span>^(k-<span class="number">1</span>)-<span class="number">1</span>)</span><br><span class="line">			</span><br><span class="line">		  <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> abs(r[j,j] - r[j-<span class="number">1</span>,j-<span class="number">1</span>]) &lt;= tol</span><br><span class="line">				println(<span class="string">&quot;finsh in &quot;</span>, j ,<span class="string">&quot;step&quot;</span>)</span><br><span class="line">				<span class="keyword">return</span> r[j,j]</span><br><span class="line">			<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	println(<span class="string">&quot;finsh in &quot;</span>, j ,<span class="string">&quot;step&quot;</span> ,<span class="string">&quot; error :&quot;</span>, abs(r[n,n] - r[n-<span class="number">1</span>,n-<span class="number">1</span>]))</span><br><span class="line">	<span class="keyword">return</span> r[n,n]</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">println(romberg(x-&gt; log(x),<span class="number">1.0</span>,<span class="number">2.0</span>,<span class="number">100</span>))</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>自适应积分</p>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> trapezoidal_rule(f::<span class="built_in">Function</span>,a::<span class="built_in">Float64</span>,b::<span class="built_in">Float64</span>)</span><br><span class="line">	<span class="keyword">return</span>  (f(a)+f(b))*(b-a)/<span class="number">2.0</span></span><br><span class="line">	</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#println(trapezoidal_rule(x-&gt;1+ sin(exp(3*x)),-1.0,1.0))</span></span><br><span class="line"><span class="keyword">function</span>  Simpson_rule(f::<span class="built_in">Function</span>,a::<span class="built_in">Float64</span>,b::<span class="built_in">Float64</span>)</span><br><span class="line">		h=(b-a)/<span class="number">2.0</span></span><br><span class="line">		<span class="keyword">return</span>  h*(f(a)+f(b)+<span class="number">4</span>*f(a+h))/<span class="number">3.0</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> adapquad(f::<span class="built_in">Function</span>,a::<span class="built_in">Float64</span>,b::<span class="built_in">Float64</span>,S::<span class="built_in">Function</span>,Tol::<span class="built_in">Float64</span>=<span class="number">10</span>^-<span class="number">5</span>,n::<span class="built_in">Int64</span>=<span class="number">100</span>,a_orig::<span class="built_in">Float64</span>=a,b_orig::<span class="built_in">Float64</span>=b)</span><br><span class="line">	</span><br><span class="line">	c = (a+b)/<span class="number">2.0</span></span><br><span class="line">	Sab=S(f,a,b)</span><br><span class="line">	Sac=S(f,a,c)</span><br><span class="line">	Scb=S(f,c,b)</span><br><span class="line">	get_Tol=abs(Sab-Sac-Scb)</span><br><span class="line">	<span class="keyword">if</span>  get_Tol &lt; Tol*(b-a)/(b_orig-a_orig)</span><br><span class="line">		<span class="comment">#println(&quot;convergence  in &quot; , n, &quot;step&quot;)</span></span><br><span class="line">		<span class="keyword">return</span>  Sac + Scb</span><br><span class="line">	<span class="keyword">elseif</span> n&lt;<span class="number">0</span></span><br><span class="line">		println(<span class="string">&quot;no convergence get_Tol:&quot;</span> ,get_Tol)</span><br><span class="line">		<span class="keyword">return</span>  Sac + Scb</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		 <span class="keyword">return</span> adapquad(f,a,c,S,Tol,n-<span class="number">1</span>,a_orig,b_orig) + adapquad(f,c,b,S,Tol,n-<span class="number">1</span>,a_orig,b_orig)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">println(adapquad(x-&gt;<span class="number">1.0</span>+ sin(exp(<span class="number">3.0</span>*x)),-<span class="number">1.0</span>,<span class="number">1.0</span>,trapezoidal_rule))</span><br><span class="line"></span><br><span class="line">println(adapquad(x-&gt;<span class="number">1.0</span>+ sin(exp(<span class="number">3.0</span>*x)),-<span class="number">1.0</span>,<span class="number">1.0</span>,Simpson_rule))</span><br></pre></td></tr></table></figure>
+<h2 id="随机数和应用">随机数和应用</h2>
+<p>随机数生成器的目的是使输出的数字满足独立同分布。</p>
+<h4 id="线性同余生成器">线性同余生成器</h4>
+<p><span class="math inline">\(x_i=a x_{i-1}+b(\bmod m)\)</span>,
+a为乘子 b为偏移 m为模数 （如 a=13,b=0,m=31，以30为周期)</p>
+<p>Park 和 Miller 提出一中随机数生成的方案 使用梅森（Mersennse) 素数
+<span class="math inline">\(2^p -1\)</span> p为整数 （如 a=<span
+class="math inline">\(7^5\)</span>,b=0,m=<span
+class="math inline">\(2^{31}-1\)</span>，重复周期理论最大值为<span
+class="math inline">\(2^{31}-2\)</span>)</p>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> LCG(x::<span class="built_in">Int64</span>,n::<span class="built_in">Int64</span>=<span class="number">1</span>,a::<span class="built_in">Int64</span>=<span class="number">7</span>^<span class="number">5</span>,m::<span class="built_in">Int64</span>=<span class="number">2</span>^<span class="number">31</span>-<span class="number">1</span>,b::<span class="built_in">Int64</span>=<span class="number">0</span>)</span><br><span class="line">	result=[]</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span>:n</span><br><span class="line">		x= (a*x +b )%m</span><br><span class="line">		push!(result,<span class="number">1.0</span>*x/m)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">end</span> </span><br><span class="line">	<span class="keyword">return</span> result</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">#求 x^2 在0-1的积分值</span></span><br><span class="line">println(sum([ i^<span class="number">2</span> <span class="keyword">for</span> i <span class="keyword">in</span> LCG(<span class="number">1</span>,<span class="number">3000</span>)])/<span class="number">3000</span>)</span><br></pre></td></tr></table></figure>
+<h4 id="生成正态分布">生成正态分布</h4>
+<h4 id="蒙卡1型问题">蒙卡1型问题</h4>
+<p>求函数的均值</p>
+<h4 id="蒙卡2型问题">蒙卡2型问题</h4>
+<p>问题无法转换为计算函数平均值的问题 如求一个区域的面积</p>
+<p>两类问题用伪随机数得到的误差</p>
+<p><span class="math inline">\(\text { Error } \propto
+n^{-\frac{1}{2}}\)</span></p>
+<h4 id="扩展">扩展</h4>
+<p>延迟斐波那契生成器 重复周期超过<span
+class="math inline">\(2^{1400}\)</span></p>
+<h4 id="拟随机数">拟随机数</h4>
+<p>在条件允许下 放弃对随机数 的独立性要求</p>
+<p>halton 选定一种进制 如 2 进制 第i随机数为 如 6 在二进制下 为110
+倒转这个表示 为 011 写成小数 0.011 然后变回原来十进制 0.375</p>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> halton(p::<span class="built_in">Int64</span>,n::<span class="built_in">Int64</span>=<span class="number">1</span>)</span><br><span class="line">	num=<span class="built_in">Int</span>(ceil(log(p,n)))+<span class="number">1</span></span><br><span class="line">	b=zeros(num,<span class="number">1</span>)</span><br><span class="line">	eps=<span class="number">10</span>^-<span class="number">6</span></span><br><span class="line">	u=zeros(n,<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">for</span> j <span class="keyword">in</span> <span class="number">1</span>:n</span><br><span class="line">		</span><br><span class="line">		i=<span class="number">1</span></span><br><span class="line">		b[<span class="number">1</span>] += <span class="number">1</span></span><br><span class="line">		<span class="keyword">while</span> (b[i] &gt; (p-<span class="number">1</span> +eps))</span><br><span class="line">			</span><br><span class="line">			b[i] = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">			i+=<span class="number">1</span></span><br><span class="line">			b[i] += <span class="number">1</span></span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">		</span><br><span class="line">		u[j] = <span class="number">0</span></span><br><span class="line">		<span class="keyword">for</span> k <span class="keyword">in</span> <span class="number">1</span>:num</span><br><span class="line">			</span><br><span class="line">			u[j] = u[j] + b[k]*(<span class="number">1.0</span>*p)^(-k)</span><br><span class="line">			</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">return</span> u</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>两类蒙卡问题用拟随机数得到的误差</p>
+<p>1型蒙卡 <span class="math inline">\(\text { Error } \propto(\ln n)^d
+n^{-1}\)</span></p>
+<p>2型蒙卡 <span class="math inline">\(\text { Error }
+\propto(n)^{\frac{1}{2}} n^{-\frac{1}{2 d}}\)</span></p>
+<p>d是维度</p>
+<h2 id="奇异值分解">奇异值分解</h2>
+<h2 id="参考书籍">参考书籍</h2>
+<p>数值分析 作者: <a target="_blank" rel="noopener" href="https://book.douban.com/search/萨奥尔">萨奥尔
+(Timothy Sauer)</a> 译者: <a
+target="_blank" rel="noopener" href="https://book.douban.com/search/裴玉茹">裴玉茹</a> / <a
+target="_blank" rel="noopener" href="https://book.douban.com/search/马赓宇">马赓宇</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E5%80%BC%E5%88%86%E6%9E%90/" rel="tag"># 数值分析</a>
+              <a href="/tags/julia/" rel="tag"># julia</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/326483f6.html" rel="prev" title="苹果病害图像识别挑战赛">
+                  <i class="fa fa-chevron-left"></i> 苹果病害图像识别挑战赛
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/f9ac47d6.html" rel="next" title="时间序列比赛(一)草稿">
+                  时间序列比赛(一)草稿 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mkk</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js","integrity":"sha256-e0o3JYsdjqKajf9eOe22FhioYSz9WofRY4dLKo3F6do="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"catcooc","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body>
+</html>

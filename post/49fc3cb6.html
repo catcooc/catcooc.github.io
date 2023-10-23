@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"catcooc.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":null,"activeClass":"disqus"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="占个位置">
+<meta property="og:type" content="article">
+<meta property="og:title" content="人工智能 现代方法 第三章读书笔记(持续更新）">
+<meta property="og:url" content="https://catcooc.github.io/post/49fc3cb6.html">
+<meta property="og:site_name" content="mkk的小窝">
+<meta property="og:description" content="占个位置">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-01-25T14:06:06.000Z">
+<meta property="article:modified_time" content="2023-05-17T09:16:47.619Z">
+<meta property="article:author" content="mkk">
+<meta property="article:tag" content="读书笔记">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://catcooc.github.io/post/49fc3cb6.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://catcooc.github.io/post/49fc3cb6.html","path":"post/49fc3cb6.html","title":"人工智能 现代方法 第三章读书笔记(持续更新）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>人工智能 现代方法 第三章读书笔记(持续更新） | mkk的小窝</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">mkk的小窝</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">这里存放了一些杂草</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-链接"><a href="/link/" rel="section"><i class="fas fa-link fa-fw"></i>链接</a></li><li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fas fa-heart fa-fw"></i>关于</a></li><li class="menu-item menu-item-留言板"><a href="/messageboard/" rel="section"><i class="fas fa-tags fa-fw"></i>留言板</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%A0%E4%B8%AA%E4%BD%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">占个位置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%A0%E4%BF%A1%E6%81%AF%E6%90%9C%E7%B4%A2%E7%AD%96%E7%95%A5"><span class="nav-number">2.</span> <span class="nav-text">3.4无信息搜索策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2breadth-first-search"><span class="nav-number">2.1.</span> <span class="nav-text">广度优先搜索(breadth-first
+search)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dijkstra-%E7%AE%97%E6%B3%95%E6%88%96%E4%B8%80%E8%87%B4%E4%BB%A3%E4%BB%B7%E6%90%9C%E7%B4%A2"><span class="nav-number">2.2.</span> <span class="nav-text">Dijkstra 算法或一致代价搜索</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2depth-first-search"><span class="nav-number">2.3.</span> <span class="nav-text">深度优先搜索（depth-first
+search）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8C%E5%90%91%E6%90%9C%E7%B4%A2"><span class="nav-number">2.4.</span> <span class="nav-text">双向搜索</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%89%E4%BF%A1%E6%81%AF%E5%90%AF%E5%8F%91%E5%BC%8F%E6%90%9C%E7%B4%A2%E7%AD%96%E7%95%A5"><span class="nav-number">3.</span> <span class="nav-text">3.5 有信息（启发式）搜索策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%AA%E5%BF%83%E6%9C%80%E4%BD%B3%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2greedy-best-first-search"><span class="nav-number">3.1.</span> <span class="nav-text">贪心最佳优先搜索（greedy
+best-first search）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#aast%E6%90%9C%E7%B4%A2aast-search"><span class="nav-number">3.2.</span> <span class="nav-text">\(A^\ast\)搜索（\(A^\ast\) search）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BB%A1%E6%84%8F%E6%90%9C%E7%B4%A2%E4%B8%8D%E5%8F%AF%E5%AE%B9%E8%AE%B8%E7%9A%84%E5%90%AF%E5%8F%91%E5%BC%8F%E5%87%BD%E6%95%B0%E4%B8%8E%E5%8A%A0%E6%9D%83aast-%E6%90%9C%E7%B4%A2"><span class="nav-number">3.3.</span> <span class="nav-text">满意搜索：不可容许的启发式函数与加权\(A^\ast\) 搜索</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%8F%97%E9%99%90%E6%90%9C%E7%B4%A2"><span class="nav-number">3.4.</span> <span class="nav-text">内存受限搜索</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8C%E5%90%91%E5%90%AF%E5%8F%91%E5%BC%8F%E6%90%9C%E7%B4%A2"><span class="nav-number">3.5.</span> <span class="nav-text">双向启发式搜索</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%AF%E5%8F%91%E5%BC%8F%E5%87%BD%E6%95%B0"><span class="nav-number">4.</span> <span class="nav-text">3.6　启发式函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E6%9D%BE%E5%BC%9B%E9%97%AE%E9%A2%98%E5%87%BA%E5%8F%91%E7%94%9F%E6%88%90%E5%90%AF%E5%8F%91%E5%BC%8F%E5%87%BD%E6%95%B0"><span class="nav-number">4.1.</span> <span class="nav-text">从松弛问题出发生成启发式函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E5%AD%90%E9%97%AE%E9%A2%98%E5%87%BA%E5%8F%91%E7%94%9F%E6%88%90%E5%90%AF%E5%8F%91%E5%BC%8F%E5%87%BD%E6%95%B0%E6%A8%A1%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">4.2.</span> <span class="nav-text">从子问题出发生成启发式函数：模式数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%B0%E6%A0%87%E7%94%9F%E6%88%90%E5%90%AF%E5%8F%91%E5%BC%8F%E5%87%BD%E6%95%B0"><span class="nav-number">4.3.</span> <span class="nav-text">使用地标生成启发式函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="mkk"
+      src="/img/favicon.png">
+  <p class="site-author-name" itemprop="name">mkk</p>
+  <div class="site-description" itemprop="description">我在这里放了一些东西</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/catcooc" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;catcooc" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://catcooc.github.io/post/49fc3cb6.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/favicon.png">
+      <meta itemprop="name" content="mkk">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="mkk的小窝">
+      <meta itemprop="description" content="我在这里放了一些东西">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="人工智能 现代方法 第三章读书笔记(持续更新） | mkk的小窝">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          人工智能 现代方法 第三章读书笔记(持续更新）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-01-25 22:06:06" itemprop="dateCreated datePublished" datetime="2023-01-25T22:06:06+08:00">2023-01-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-05-17 17:16:47" itemprop="dateModified" datetime="2023-05-17T17:16:47+08:00">2023-05-17</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/post/49fc3cb6.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="post/49fc3cb6.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="占个位置">占个位置</h1>
+<span id="more"></span>
+<h1 id="无信息搜索策略">3.4无信息搜索策略</h1>
+<p>  无信息搜索算法不提供有关某个状态与目标状态的接近程度的任何线索。</p>
+<h2 id="广度优先搜索breadth-first-search">广度优先搜索(breadth-first
+search)</h2>
+<hr />
+<p><strong>function</strong> Breadth-First-Search(problem)
+<strong>returns</strong> 一个解节点或 failure<br><br />
+ node ← Node(problem.Initial)<br><br />
+ <strong>if</strong> problem.Is-Goal(node.State) <strong>then
+return</strong> node<br><br />
+ frontier ← 一个FIFO队列，其中一个元素为node<br><br />
+ reached ←{problem.Initial}<br><br />
+ <strong>while not</strong> Is-Empty(frontier)
+<strong>do</strong><br><br />
+  node ← Pop(frontier)<br><br />
+  <strong>for each</strong> child <strong>in</strong> Expand(problem,
+node) <strong>do</strong><br><br />
+   s ← child.State<br><br />
+   <strong>if</strong> problem.Is-Goal(s) <strong>then return</strong>
+child<br><br />
+   <strong>if</strong> s不在reached中 <strong>then</strong><br><br />
+    将s添加到reached<br><br />
+    将child添加到frontier<br><br />
+<strong>return</strong> failure<br></p>
+<hr />
+<p><strong>优先队列</strong>（priority queue）首先弹出根据评价函数f
+计算得到的代价最小的节点。它被用于最佳优先搜索。</p>
+<p><strong>FIFO 队列</strong>（FIFO
+queue），即先进先出队列（first-in-first-out
+queue），首先弹出最先添加到队列中的节点；它被用于广度优先搜索。</p>
+<p><strong>LIFO 队列</strong>（LIFO
+queue），即后进先出队列（last-in-first-out
+queue），也称为栈（stack），首先弹出最近添加的节点；它被用于深度优先搜索。</p>
+<h2 id="dijkstra-算法或一致代价搜索">Dijkstra 算法或一致代价搜索</h2>
+<hr />
+<p><strong>function</strong> Uniform-Cost-Search(problem)
+<strong>returns</strong> 一个解节点或failure<br><br />
+<strong>return</strong> Best-First-Search(problem, Path-Cost)<br></p>
+<p><strong>function</strong> Best-First-Search(problem, f )
+<strong>returns</strong> 一个解节点或 failure<br><br />
+ node ← Node(State=problem.Initial)<br><br />
+ frontier ← 一个以 f 排序的优先队列，其中一个元素为node<br><br />
+ reached ←
+一个查找表，其中一个条目的键为problem.Initial，值为node<br><br />
+ <strong>while not</strong> Is-Empty(frontier)
+<strong>do</strong><br><br />
+  node ← Pop(frontier)<br><br />
+  if problem.Is-Goal(node.State) then return node<br><br />
+  for each child in Expand(problem, node) <strong>do</strong><br><br />
+  s ← child.State<br><br />
+  if s不在reached中 or child.Path-Cost reached[s].Path-Cost
+then<br><br />
+    reached[s] ← child<br><br />
+    将child添加到frontier中<br><br />
+<strong>return</strong> failure<br><br />
+<strong>function</strong> Expand(problem, node) <strong>yields</strong>
+节点<br><br />
+ s ← node.State<br><br />
+ <strong>for each</strong> action <strong>in</strong> problem.Actions(s)
+<strong>do</strong><br><br />
+  s' ← problem.Result(s, action)<br><br />
+   cost ← node.Path-Cost + problem.Action-Cost(s, action, s')<br><br />
+   <strong>yield</strong> Node(State=s', Parent=node, Action=action,
+Path-Cost=cost)<br></p>
+<hr />
+<h2 id="深度优先搜索depth-first-search">深度优先搜索（depth-first
+search）</h2>
+<hr />
+<p><strong>function</strong> Depth-Limited-Search(problem, ℓ)
+<strong>returns</strong>一个解节点或failure cutoff //当ℓ=∞
+就是深度优先搜索<br />
+ frontier ←
+一个LIFO队列（栈），其中一个元素为Node(problem.Initial)<br><br />
+ result ← failure<br><br />
+ <strong>while not</strong> Is-Empty(frontier)
+<strong>do</strong><br><br />
+  node ← Pop(frontier)<br><br />
+  <strong>if</strong> problem.Is-Goal(node.State) then return
+node<br><br />
+  <strong>if</strong> Depth(node) ℓ <strong>then</strong><br><br />
+   result ← cutoff<br><br />
+  <strong>else if not</strong> Is-Cycle(node)
+<strong>do</strong><br><br />
+   <strong>for each</strong> child <strong>in</strong> Expand(problem,
+node) <strong>do</strong><br><br />
+    将child添加到frontier<br><br />
+<strong>return</strong> result<br></p>
+<p><strong>function</strong> Iterative-Deepening-Search(problem)
+<strong>returns</strong> 一个解节点或failure<br><br />
+ <strong>for</strong> depth = 0 to ∞ <strong>do</strong><br><br />
+  result ← Depth-Limited-Search(problem, depth)<br></p>
+<p><strong>if </strong> result <span class="math inline">\(\neq\)</span>
+cutoff then <strong>return</strong> result<br></p>
+<hr />
+<h2 id="双向搜索">双向搜索</h2>
+<p>  我们传入问题和评价函数的两个版本，一个是正向的（下标F），另一个是反向的（下标B）。当评价函数是路径代价时，找到的第一个解将是最优解，但是对于不同的评价函数，这一结论不一定是正确的。因此，我们会记录迄今为止找到的最优解，并且可能不得不多次更新最优解，直到Terminated
+测试证明不可能再有<br />
+更好的解。</p>
+<hr />
+<p><strong>function</strong> BiBF-Search(problemF, fF, problemB, fB)
+<strong>returns</strong> 一个解节点或 failure<br><br />
+ node_F ← Node(problem_F.initial) // 初始状态节点<br><br />
+ node_B ← Node(problem_B.initial) // 目标状态节点<br><br />
+ frontier_F ← 按f_F排序的优先队列，其中一个元素为node_F<br><br />
+ frontier_B ← 按 f_B排序的优先队列，其中一个元素为node_B<br><br />
+ reached_F ←
+一个查找表，其中一个条目的键是node_F.State且值是node_F<br><br />
+ reached_B ←
+一个查找表，其中一个条目的键是node_B.State且值是node_B<br><br />
+ solution ← failure<br><br />
+ <strong>while not</strong> Terminated(solution, frontier_F, frontier_B)
+<strong>do</strong><br><br />
+  <strong>if</strong> f_F(Top(frontier_F)) f_B(Top(frontier_B))
+<strong>then</strong><br><br />
+   solution ← Proceed(F, problem_F , frontier_F , reached_F, reached_B,
+solution)<br><br />
+  <strong>else</strong> solution ← Proceed(B, problem_B, frontier_B,
+reached_B, reached_F, solution)<br><br />
+<strong>return </strong>solution<br></p>
+<p><strong>function</strong> Proceed(dir, problem, frontier, reached,
+reached2, solution) <strong>returns</strong>一个解<br><br />
+/ / 在frontier上扩展节点，对照reached2中的另一个边界<br><br />
+/ / 变量dir是方向：要么是F（代表正向），要么是B（代表反向）<br><br />
+node ← Pop(frontier)<br><br />
+<strong>for each</strong> child in Expand(problem, node) do<br><br />
+ s ← child.State<br><br />
+ <strong>if</strong> s不在 reached 中 or Path-Cost(child)
+Path-Cost(reached[s]) <strong>then</strong><br><br />
+  reached[s] ← child<br><br />
+  //将child添加到frontier<br><br />
+ if s不在reached2中 then<br><br />
+  solution_2 ← Join-Nodes(dir, child, reached_2[s])<br><br />
+  <strong>if</strong> Path-Cost(solution_2) Path-Cost(solution)
+<strong>then</strong><br><br />
+   solution ← solution_2<br><br />
+<strong>return</strong> solution<br></p>
+<hr />
+<p>Terminated测试怎么实现？</p>
+<table>
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 15%" />
+<col style="width: 22%" />
+<col style="width: 22%" />
+<col style="width: 22%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>算法</th>
+<th>采用队列和搜索</th>
+<th>时间复杂度/空间复杂度</th>
+<th>优点 /缺点</th>
+<th>应用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>广度优先搜索(breadth-first search)</td>
+<td>先进先出总能得到新节点 图搜索</td>
+<td><span class="math inline">\(O(b^d)\)</span><a href="#fn1"
+class="footnote-ref" id="fnref1"
+role="doc-noteref"><sup>1</sup></a></td>
+<td>总能找到动作（深度）最少（浅）的解/需要很多内存和时间</td>
+<td>所有动作的代价相同（把深度看作代价）</td>
+</tr>
+<tr class="even">
+<td>Dijkstra 算法或一致代价搜索</td>
+<td>优先队列 图搜索</td>
+<td><span class="math inline">\(O(b^{1+C^*/ \epsilon})\)</span><a
+href="#fn2" class="footnote-ref" id="fnref2"
+role="doc-noteref"><sup>2</sup></a></td>
+<td>一致代价搜索是完备的，也是代价最优的，因为它找到的第一个解的代价至少与边界上的任何其他节点的代价一样小。一致代价搜索会按照代价递增的顺序系统地考虑所有路径，而不会陷入一直沿单一无限路径探索的困境。</td>
+<td>动作代价不同时（累加从根节点到当前节点的代价）</td>
+</tr>
+<tr class="odd">
+<td>深度优先搜索（depth-first search）</td>
+<td>树状搜索（不维护已达状态表）</td>
+<td><span class="math inline">\(O(b^m)\)</span>/<span
+class="math inline">\(O(bm)\)</span></td>
+<td>内存小/不是最优解 且不完备容易陷入循环</td>
+<td>节约内存</td>
+</tr>
+<tr class="even">
+<td>回溯搜索（backtracking search）</td>
+<td>树状搜索</td>
+<td><span class="math inline">\(O(b^m)\)</span>/<span
+class="math inline">\(O(m)\)</span></td>
+<td>节省大量资源，通过回溯，我们还可以为当前路径上的状态维护一个有效的集合数据结构，从而使检查循环的时间从<span
+class="math inline">\(O(m)\)</span> 减少到<span
+class="math inline">\(O(1)\)</span>。</td>
+<td>回溯对许多具有大型状态描述的问题（例如机器人组装）的成功求解至关重要。</td>
+</tr>
+<tr class="odd">
+<td>深度受限搜索（depth-limited search）</td>
+<td>树状搜索（不维护已达状态表）设置深度界限ℓ</td>
+<td><span class="math inline">\(O(b^ℓ)\)</span>/<span
+class="math inline">\(O(bℓ)\)</span></td>
+<td></td>
+<td>深度优先搜索的改进版本</td>
+</tr>
+<tr class="even">
+<td>迭代加深搜索（iterative deepening search）</td>
+<td></td>
+<td>存在解时<span class="math inline">\(O(b^d)\)</span>/<span
+class="math inline">\(O(bd)\)</span>不存在解时<span
+class="math inline">\(O(b^m)\)</span> / <span
+class="math inline">\(O(bm)\)</span></td>
+<td>在搜索树顶端状态会被重复生成</td>
+<td>解决了如何选择一个合适的的问题</td>
+</tr>
+<tr class="odd">
+<td>双向搜索（bidirectional search）</td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="math inline">\(b^{d/2}+b^{d/2}\)</span>要比<span
+class="math inline">\(b^d\)</span>小得多</td>
+</tr>
+</tbody>
+</table>
+<h1 id="有信息启发式搜索策略">3.5 有信息（启发式）搜索策略</h1>
+<p>  引入启发式函数（heuristic function) h(n) = 从节点n
+的状态到目标状态的最小代价路径的代价估计值（它的来源后面的章节回讲）</p>
+<h2
+id="贪心最佳优先搜索greedy-best-first-search">贪心最佳优先搜索（greedy
+best-first search）</h2>
+<p>  使用最优先搜索的方式 去评价函数f(n)=h(n)。例如寻径问题
+我们用两地的直线距离<span
+class="math inline">\(h_{SLD}\)</span>作为启发函数。对于这一特定问题，使用<span
+class="math inline">\(h_{SLD}\)</span>的贪心最佳优先搜索无须扩展不在解路径上的节点就找到了解。但是，它找到的解并不是代价最优的。它保证了每一步最优但无法保证全局最优。其在有限空间是完备的，在无限空间是不完备的。最坏情况下时间复杂性和空间复杂性为O(|v|),
+采用一个好的启发式函数，复杂性可以降低到O(bm)。</p>
+<h2 id="aast搜索aast-search"><span
+class="math inline">\(A^\ast\)</span>搜索（<span
+class="math inline">\(A^\ast\)</span> search）</h2>
+<p>  <span class="math inline">\(A^\ast\)</span>
+搜索也是一种最佳优先搜索 评价函数取 f(n)= g(n)+h(n)。
+g(n)是从初始状态到节点n的路径代价，h(n)是从节点n
+到一个目标状态的最短路径的代价估计值。</p>
+<p><span class="math inline">\(A^\ast\)</span> 搜索是完备的的
+。它是否是代价最优则取决于启发式函数的性质。</p>
+<p>可容许性（admissibility）一个可容许的启发式（admissible
+heuristic）函数永远不会高估到达某个目标的代价</p>
+<p>一致性（consistency）<span class="math inline">\(h(n) \leq
+c(n,a,n^\prime)+h(n^\prime)\)</span></p>
+<pre class="mermaid">
+
+graph LR
+A((n))--&quot;c(n,a,n&#39;)&quot;--&gt; B((n&#39;))
+B -.&quot;h(n&#39;)&quot;.-&gt; f
+A -.&quot;h(n)&quot;.-&gt; f((G_n&#39;))
+
+</pre>
+<p>  一致的启发式函数都是可容许的（反过来不成立）。使用一致的启发函数
+A*搜索的解总是最优的且第一次到达的状态就是最优解的路径。</p>
+<p>  搜索等值线
+一种对搜索进行可视化的方法是在状态空间中绘制等值线（contour），就像在地形图中绘制等高线一样。</p>
+<p>  <span
+class="math inline">\(A^\ast\)</span>之所以高效，是因为它会对那些对于寻找最优解没有帮助的搜索树节点进行剪枝（pruning）。对许多人工智能领域来说，剪枝（不必进行检查就可以排除不正确的答案）非常重要。需要注意的是<span
+class="math inline">\(A^\ast\)</span>并不适用与所有搜索需求，它可能受困于过多的扩展节点数。</p>
+<h2
+id="满意搜索不可容许的启发式函数与加权aast-搜索">满意搜索：不可容许的启发式函数与加权<span
+class="math inline">\(A^\ast\)</span> 搜索</h2>
+<p>  虽然 <span
+class="math inline">\(A^\ast\)</span>算法可以找到最优的解
+但是代价需要扩展大量节点
+，如果我们退而求其次,接受一个来自不可容许（但更准确）的启发函数带来的次优的解,将花费更少的时间和空间的代价，这样的解我们也称之为满意的解。</p>
+<p>  我们采用一种称为加权<span
+class="math inline">\(A^\ast\)</span>搜索（weighted <span
+class="math inline">\(A^\ast\)</span>
+search）的方法，对启发式函数的值进行更重的加权，评价函数为<span
+class="math inline">\(f(n) = g(n) + W × h(n)\)</span>，其中<span
+class="math inline">\(W\geq1\)</span>。一般会找到一个介于<span
+class="math inline">\(W\times C^\ast\)</span>与<span
+class="math inline">\(C^\ast\)</span>之间的解。这种方法也被成为有界次优搜索（bounded
+suboptimal search），与之相反还存在无界代价搜索（unbounded-cost
+search），我们接受任何代价的解，只要能快速找到它。</p>
+<h2 id="内存受限搜索">内存受限搜索</h2>
+<p>  束搜索（beam search）限定边界大小通过限定可扩展节点个数 或者只扩展
+在最优f值一定范围内的节点数。</p>
+<p>  迭代加深<span
+class="math inline">\(A^\ast\)</span>搜索（iterative-deepening <span
+class="math inline">\(A^\ast\)</span> search，ID<span
+class="math inline">\(A^\ast\)</span>）
+每次迭代更新截断的f值，新的f截断值为超过上一次迭代截断值的节点中最小的f代价。换句话说，每次迭代都会彻底地搜索一个f
+等值线，找到一个刚好超出该等值线的节点，并使用该节点的f
+代价作为下一个等值线。</p>
+<p>递归最佳优先搜索（recursive best-first search，RBFS）</p>
+<p>  使用$f_limit
+$变量跟踪从当前节点的任意祖先节点可得到的最优备选路径的f
+值。如果当前节点超过了这个限制，那么递归将回到备选路径上。随着递归的展开，RBFS
+将路径上每个节点的f 值替换为一个倒推值（backed-up
+value）——其子节点的最优f 值。通过这种方式，RBFS
+可以记住被它遗忘的子树中最优叶节点的f 值，因此，在之后的某个时刻，RBFS
+可以决定是否要重新扩展该子树。</p>
+<hr />
+<p><strong>function</strong> Recursive-Best-First-Search(problem)
+<strong>returns</strong> 一个解或者failure<br> solution, fvalue ←
+RBFS(problem, Node(problem.Initial), ∞)<br><br />
+<strong>return</strong> solution<br><br />
+<strong>function</strong> RBFS(problem, node, f_limit) returns
+一个解或failure，以及一个新的 f代价限制<br><br />
+ <strong>if</strong> problem.Is-Goal(node.State) <strong>then
+return</strong> node<br><br />
+successors ← list(Expand(node))<br><br />
+ <strong>if</strong> successors为空 <strong>then return
+failure</strong>, ∞<br><br />
+ <strong>for each</strong> s <strong>in</strong> successors
+<strong>do</strong> //用前一次搜索中的值更新 f<br><br />
+  s.f ← max(s.Path-Cost + h(s), node.f )<br><br />
+<strong>while</strong> true <strong>do</strong><br><br />
+ best ← successors 中 f 值最低的节点<br><br />
+ <strong>if </strong>best. f &gt;f_limit <strong>then return</strong>
+failure, best. f<br><br />
+ alternative ← successors中第二低的 f 值<br><br />
+ result, best. f ← RBFS(problem, best, min(f_limit,
+alternative))<br><br />
+ <strong>if</strong> result<span class="math inline">\(\neq\)</span>
+failure <strong>then return</strong> result, best. f<br></p>
+<hr />
+<p>  有多少可用内存使用多少内存的算法 <span
+class="math inline">\(MA^\ast\)</span>（memory-bounded <span
+class="math inline">\(A^\ast\)</span>，内存受限的<span
+class="math inline">\(A^\ast\)</span>）和<span
+class="math inline">\(SMA^\ast\)</span>（simplified <span
+class="math inline">\(MA^\ast\)</span>，简化的<span
+class="math inline">\(MA^\ast\)</span>）。<span
+class="math inline">\(SMA^\ast\)</span> 像<span
+class="math inline">\(A^\ast\)</span>一样，但是当内存满时，它不在添加节点
+除非它判断以后删除最老的最差叶节点。和RBFS 一样，SMA*
+将被遗忘节点的值备份到其父节点。</p>
+<h2 id="双向启发式搜索">双向启发式搜索</h2>
+<p>  考虑启发函数的双向最佳优先搜索。正向搜索用<span
+class="math inline">\(f_F(n)=g_F(n)+h_F(n)\)</span>作为评价函数，反向搜索用<span
+class="math inline">\(f_B(n)=g_B(n)+h_B(n)\)</span>作为评价函数。他们拥有不同的评价函数。</p>
+<p>解代价的下界</p>
+<p><span class="math display">\[
+lb(m,n)=max(g_F(m)+g_B(n),f_F(m),f_B(n))
+\]</span></p>
+<h1 id="启发式函数">3.6　启发式函数</h1>
+<p>  一种描述启发式函数质量的方法是<strong>有效分支因子（effective
+branching factor）</strong><span
+class="math inline">\(b^\ast\)</span>。如果针对一个特定问题，<span
+class="math inline">\(A^\ast\)</span>
+搜索所生成的总节点数是n，而解的深度是d，那么<span
+class="math inline">\(b^\ast\)</span> 就是深度为d 的均衡树要包含n + 1
+个节点所必需的分支因子。因此有</p>
+<p><span class="math display">\[
+n+1=1+b^\ast+(b^\ast)^2+...+(b^\ast)^d=\frac{1-(b^\ast)^{d+1}}{1-b^\ast}
+\]</span><br />
+  科尔夫和里德（Korf and Reid,
+1998）提出了另一个刻画对于一个使用给定启发式函数h 的<span
+class="math inline">\(A^\ast\)</span> 剪枝效果的概念:
+相对于不使用启发函数的算法所用有效深度的减小量<span
+class="math inline">\(k_h\)</span> ,即无信息搜索的代价为<span
+class="math inline">\(O(b^d)\)</span> 使用启发函数后代价为<span
+class="math inline">\(O(b^{d-k_h})\)</span> 。</p>
+<p>  对于同一个问题当一个启发函数<span
+class="math inline">\(h_1\)</span>
+在每个节点的值总是大于等于另一个启发函数<span
+class="math inline">\(h_2\)</span> 时 我们说<span
+class="math inline">\(h_1\)</span> 占优于 <span
+class="math inline">\(h_2\)</span> 。</p>
+<h2 id="从松弛问题出发生成启发式函数">从松弛问题出发生成启发式函数</h2>
+<p>  启发函数很重要
+那么如何找到好的启发函数或者如何让计算机自动找到一个启发函数呢?我们可以通过求解一个原问题的<strong>松弛问题（relaxed
+problem）</strong>的最优代价解作为启发函数。所谓松弛问题就是减少动作限制的问题，它的状态空间比原问题多了一些边，可以简单的理解为是一个相对简化的问题。我们可以删除一两个条件构造松弛问题。</p>
+<p>  如果一个可容许的启发式函数集合<span class="math inline">\(h_1, …,
+h_m\)</span>
+可以求解同一个问题，但没有一个函数明显优于其他函数，那么我们应该选择哪个函数？事实证明，我们可以通过如下定义，得到最优的启发式函数：</p>
+<p><span class="math display">\[
+h(n)=max\left\{h_1(n),..,h_k(n)\right\}
+\]</span><br />
+  这种复合启发式函数将选择对于所讨论节点最准确的函数。因为<span
+class="math inline">\(h_i\)</span> 都是可容许的，所以h
+也是可容许的（如果<span class="math inline">\(h_i\)</span>
+都是一致的，则h 也是一致的）。此外，h
+优于所有组成它的启发式函数。唯一的缺点是<span
+class="math inline">\(h(n)\)</span>
+的计算时间更长。如果考虑这一问题，另一种选择是在每次评价时随机选择一个启发式函数，或者使用机器学习算法来预测哪个启发式函数是最优的。这样做可能会导致启发式函数失去一致性（即使每个<span
+class="math inline">\(h_i\)</span>
+都是一致的），但在实践中，它通常能更快地求解问题。</p>
+<h2
+id="从子问题出发生成启发式函数模式数据库">从子问题出发生成启发式函数：模式数据库</h2>
+<p>  <strong>模式数据库（pattern
+database）</strong>的思想是为每个可能的子问题存储准确的解代价。然后，通过在数据库中查找相应的子问题，为搜索过程中遇到的每个状态计算一个可容许的启发式函数<span
+class="math inline">\(h_{DB}\)</span>。</p>
+<p>  子问题和松弛问题区别在于 子问题状态数小于原问题
+,而松弛问题状态数和原问题相同只是多了一些边。</p>
+<p>  当原问题可以被划分成若干个子问题且这些问题解不重叠
+我们可以建立一个<strong>不相交模式数据库（disjoint pattern
+database）</strong>并且把其中每个子问题的解构成复合启发式函数。</p>
+<h2 id="使用地标生成启发式函数">使用地标生成启发式函数</h2>
+<p>为了减少搜索时间我们可以使用<strong>预计算（precomputation）</strong>技巧，比如
+先花费时间计算各个顶点的最优路径存储下 以满足以后用户的搜索需求。</p>
+<p>如果简单的进行每个顶点的预计算需要花费大量时间和储存是不太明智的。更好的方法是从顶点中选择一些（也许10
+个或20 个）<strong>地标点（landmark
+point)</strong>L，然后计算存储各个顶点v到地标L的最优代价<span
+class="math inline">\(C^\ast(v,L)\)</span>（以及地标到顶点的<span
+class="math inline">\(C^\ast(L,v)\)</span>
+对于无向图则不用），最后构造出</p>
+<p><span class="math display">\[
+h_L(n)= min C^\ast(n,L)+C^\ast(L,goal)
+\]</span><br />
+<span
+class="math inline">\(h_L(n)\)</span>是高效的，但不是可容许的。只要稍加注意，我们就可以提出一种既高效又可容许的启发式函数:</p>
+<p><span class="math display">\[
+h_{DH}(n)= max |C^\ast(n,L)-C^\ast(L,goal)|
+\]</span></p>
+<p>这被称为<strong>差分启发式（differential
+heuristic）</strong>函数（因为包含减法）。可以把它理解为在比目标还要远的某个位置设置一个地标点。如果目标恰好在从n
+到该地标点的最优路径上，那么“考<br />
+虑从n 到L 的完整路径，然后减去这条路径的最后一部分，即从goal
+到L，即可得到从n 到goal
+的这段路径的准确代价”。如果目标稍微偏离到地标的最优路径，启发式函数将是不准确的，但仍然是可容许的。比目标近的地标是没有用的；例如，一个恰好位于n
+和goal 正中间的地标将导致<span class="math inline">\(h_{DH} =
+0\)</span>，这是没有用的。</p>
+<p>介绍几种选择地标点的方法。</p>
+<ul>
+<li>贪心方法是随机选择第一个地标，然后找到离它最远的点，将其添加到地标集合中，接着在每次迭代中添加离最近地标最远的点。</li>
+<li>如果通过用户过去的搜索请求日志，那么选择搜索中经常请求的地点作为地标。</li>
+<li>对于差分启发式函数，地标分布在图的周界上更好。因此，一个比较好的技术是找到图的质心，围绕质心划分出k
+个楔形（就像饼状图一样），并在每个楔形中选择离中心最远的顶点。</li>
+</ul>
+<p>一些寻径算法通过在图中添加<strong>捷径（shortcut）</strong>——人工定义的对应于一条最优多行动路径的边——来节省更多的时间。</p>
+<p>我们还可以人为考虑几个与问题有关的状态特征，然后把他们线性组合得到启发函数。</p>
+<p>我们也可以期盼智能体从搜索过程中产生的搜索树序列（<strong>元级状态空间（metalevel
+state space）</strong>）里学习优化搜索的方法
+即<strong>元级学习（metalevel learning）</strong></p>
+<h1 id="参考">参考</h1>
+<p>Artificial Intelligence: A Modern Approach, Fourth Edition人工智能:
+现代方法（第4 版）[ 美] 斯图尔特• 罗素（Stuart Russell） 著 彼得•
+诺维格（Peter Norvig） 张博雅 陈坤 田超 顾卓尔 吴凡 赵申剑 译 张志华
+审校 人 民 邮 电 出 版 社</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>(b为节点d为深度)<a href="#fnref1" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>(<span class="math inline">\(C^*\)</span> 算法最优代价
+<span class="math inline">\(\epsilon\)</span>每个动作下界 &gt;0)<a
+href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag"># 读书笔记</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/eb31a1ba.html" rel="prev" title="人工智能 现代方法 第二章读书笔记(持续更新）">
+                  <i class="fa fa-chevron-left"></i> 人工智能 现代方法 第二章读书笔记(持续更新）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/bd762e03.html" rel="next" title="OpenMMLab实战营第一课  计算机视觉算法基础与OpenMMLab介绍">
+                  OpenMMLab实战营第一课  计算机视觉算法基础与OpenMMLab介绍 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mkk</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js","integrity":"sha256-e0o3JYsdjqKajf9eOe22FhioYSz9WofRY4dLKo3F6do="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"catcooc","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body>
+</html>

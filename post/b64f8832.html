@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"catcooc.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":null,"activeClass":"disqus"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="什么是目标检测 识别出大图片里的感兴趣部分 并且框出来 目标检测的应用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenMMLab实战营第四课 目标检测算法基础">
+<meta property="og:url" content="https://catcooc.github.io/post/b64f8832.html">
+<meta property="og:site_name" content="mkk的小窝">
+<meta property="og:description" content="什么是目标检测 识别出大图片里的感兴趣部分 并且框出来 目标检测的应用">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-02-07T06:32:43.000Z">
+<meta property="article:modified_time" content="2023-05-17T09:18:14.070Z">
+<meta property="article:author" content="mkk">
+<meta property="article:tag" content="OpenMMLab">
+<meta property="article:tag" content="计算机视觉">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://catcooc.github.io/post/b64f8832.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://catcooc.github.io/post/b64f8832.html","path":"post/b64f8832.html","title":"OpenMMLab实战营第四课 目标检测算法基础"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>OpenMMLab实战营第四课 目标检测算法基础 | mkk的小窝</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">mkk的小窝</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">这里存放了一些杂草</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-链接"><a href="/link/" rel="section"><i class="fas fa-link fa-fw"></i>链接</a></li><li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fas fa-heart fa-fw"></i>关于</a></li><li class="menu-item menu-item-留言板"><a href="/messageboard/" rel="section"><i class="fas fa-tags fa-fw"></i>留言板</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B"><span class="nav-number">1.</span> <span class="nav-text">什么是目标检测</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">目标检测的应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BB%91%E7%AA%97sliding-windows"><span class="nav-number">3.</span> <span class="nav-text">滑窗(Sliding Windows)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4"><span class="nav-number">3.1.</span> <span class="nav-text">步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9%E4%B8%8E%E6%94%B9%E8%BF%9B%E6%80%9D%E8%B7%AF"><span class="nav-number">3.2.</span> <span class="nav-text">缺点与改进思路</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%8C%83%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">目标检测的基本范式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-number">5.</span> <span class="nav-text">基础知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A1%86%E8%BE%B9%E7%95%8C%E6%A1%86bounding-box"><span class="nav-number">5.1.</span> <span class="nav-text">框，边界框（Bounding Box）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A1%86%E7%9B%B8%E5%85%B3%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">5.2.</span> <span class="nav-text">框相关的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%A4%E5%B9%B6%E6%AF%94intersection-over-union"><span class="nav-number">5.3.</span> <span class="nav-text">交并比(Intersection Over
+Union)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%AE%E4%BF%A1%E5%BA%A6confidence-score"><span class="nav-number">5.4.</span> <span class="nav-text">置信度(Confidence Score)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%9E%E6%9E%81%E5%A4%A7%E5%80%BC%E6%8A%91%E5%88%B6non-maximum-suppression"><span class="nav-number">5.5.</span> <span class="nav-text">非极大值抑制(Non-Maximum
+Suppression)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BE%B9%E7%95%8C%E6%A1%86%E5%9B%9E%E5%BD%92bounding-box-regression"><span class="nav-number">5.6.</span> <span class="nav-text">边界框回归(Bounding Box
+Regression)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">5.6.1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E6%96%B9%E6%B3%95"><span class="nav-number">5.6.2.</span> <span class="nav-text">处理方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%A4%E9%98%B6%E6%AE%B5%E7%AE%97%E6%B3%95%E6%A6%82%E8%BF%B0"><span class="nav-number">6.</span> <span class="nav-text">两阶段算法概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AF%84%E4%BC%B0%E6%96%B9%E6%B3%95"><span class="nav-number">7.</span> <span class="nav-text">目标检测模型的评估方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%86%E7%A1%AE%E7%8E%87precision-%E4%B8%8E%E5%8F%AC%E5%9B%9E%E7%8E%87recall"><span class="nav-number">7.1.</span> <span class="nav-text">准确率Precision
+与召回率Recall</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pr-%E6%9B%B2%E7%BA%BF%E4%B8%8Eap-%E5%80%BC"><span class="nav-number">7.2.</span> <span class="nav-text">PR 曲线与AP 值</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="mkk"
+      src="/img/favicon.png">
+  <p class="site-author-name" itemprop="name">mkk</p>
+  <div class="site-description" itemprop="description">我在这里放了一些东西</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/catcooc" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;catcooc" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://catcooc.github.io/post/b64f8832.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/favicon.png">
+      <meta itemprop="name" content="mkk">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="mkk的小窝">
+      <meta itemprop="description" content="我在这里放了一些东西">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="OpenMMLab实战营第四课 目标检测算法基础 | mkk的小窝">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          OpenMMLab实战营第四课 目标检测算法基础
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-02-07 14:32:43" itemprop="dateCreated datePublished" datetime="2023-02-07T14:32:43+08:00">2023-02-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-05-17 17:18:14" itemprop="dateModified" datetime="2023-05-17T17:18:14+08:00">2023-05-17</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/post/b64f8832.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="post/b64f8832.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="什么是目标检测">什么是目标检测</h2>
+<p>识别出大图片里的感兴趣部分 并且框出来</p>
+<h2 id="目标检测的应用">目标检测的应用</h2>
+<span id="more"></span>
+<h2 id="滑窗sliding-windows">滑窗(Sliding Windows)</h2>
+<h3 id="步骤">步骤</h3>
+<ol type="1">
+<li><p>设定一个固定大小的窗口</p></li>
+<li><p>遍历图像所有位置，所到之处用分类模型（假设已经训练好）识别窗口中的内容</p></li>
+<li><p>为了检测不同大小、不同形状的物体，可以使用不同大小、长宽比的窗口扫描图片</p></li>
+</ol>
+<h3 id="缺点与改进思路">缺点与改进思路</h3>
+<p>简单的滑窗需要很多窗口 计算成本太大</p>
+<p>改进思路1：基于图像颜色或底层特征
+使用启发式算法替换暴力遍历例（找出可能含有物体的区域）如R-CNN，Fast
+R-CNN 中使用Selective Search
+产生提议框依赖外部算法，系统实现复杂，难以联合优化性能</p>
+<p>改进思路2：减少冗余计算，使用卷积网络实现密集预测（用卷积一次性计算所有特征，再取出对应位置的特征完成分类）。</p>
+<p>目前普遍采用的方式改进思路2</p>
+<h2 id="目标检测的基本范式">目标检测的基本范式</h2>
+<p>两阶段方法（基于区域的方法）R-CNN Fast R-CNN<br />
+以某种方式产生窗，再基于窗口内的特征进行预测</p>
+<p>单阶段方法<br />
+在特征图上基于单点特征实现密集预测 YOLO SSD</p>
+<p>其他方法</p>
+<p>级联方法 Transformer方法</p>
+<p>介绍了目标检测的技术演进</p>
+<pre class="mermaid">
+
+flowchart LR;
+subgraph A[传统方法]
+
+DPM
+
+end
+
+subgraph B[两阶段方法]
+1[R-CNN]
+2[Fast R-CNN]
+3[Faster R-CNN]
+4[RPN]
+1--&gt;2
+2--&gt;3
+4--&gt;3
+3--&gt;111( )
+111--&gt;5[Mask R-CNN]
+end
+
+subgraph C[单阶段方法]
+6[YOLO]
+7[SSD]
+88[YOLO v3]
+89[YOLO v5]
+90[FCOS]
+91[YOLO X]
+RetinaNet
+end
+subgraph D[Transformer 方法]
+DETR
+Deformable
+DETR
+end
+subgraph F[级联方法]
+Cascade 
+R-CNN
+end
+
+A--&gt; B
+B--多尺度技术--&gt;C
+C--&gt;|特征金字塔Feature Pyramid Networks,FPN|B
+111 --&gt; F
+</pre>
+<h2 id="基础知识">基础知识</h2>
+<h3 id="框边界框bounding-box">框，边界框（Bounding Box）</h3>
+<p>描述一个框需要4 个像素值：<br />
+• 方式1：左上右下边界坐标𝑙, 𝑡, 𝑟, 𝑏<br />
+• 方式2：中心坐标和框的长宽𝑥, 𝑦, 𝑤, ℎ</p>
+<p>边界框通常指紧密包围感兴趣物体的框<br />
+检测任务要求为图中出现的每个物体预测一个边界框</p>
+<h3 id="框相关的概念">框相关的概念</h3>
+<ol type="1">
+<li>区域（Region）：框的同义词</li>
+<li>区域提议（Region Proposal，Proposal）<br />
+指算法预测的可能包含物体的框，某种识别能力不强的算法的初步预测结果</li>
+<li>感兴趣区域（Region of Interest，RoI）<br />
+当我们谈论需要进一步检测这个框中是否有物体时，通常称框为感兴趣区域</li>
+<li>锚框（Anchor Box，Anchor）<br />
+图中预设的一系列基准框，类似滑窗，一些检测算法会基于锚框预测边界框</li>
+</ol>
+<h3 id="交并比intersection-over-union">交并比(Intersection Over
+Union)</h3>
+<p>定义为两矩形框交集面积与并集面积之比，是矩形框重合程度的衡量指标</p>
+<p><img
+src="http://ronny.rest/media/tutorials/localization/ZZZ_IMAGES_DIR/iou_formula.png" /></p>
+<h3 id="置信度confidence-score">置信度(Confidence Score)</h3>
+<p>模型认可自身预测结果的程度，通常需要为每个框预测一个置信度</p>
+<h3 id="非极大值抑制non-maximum-suppression">非极大值抑制(Non-Maximum
+Suppression)</h3>
+<p>滑窗类算法通常会在物体周围给出多个相近的检测框。这些框实际指向同一物体，只需要保留其中置信度最高的</p>
+<p>通过非极大值抑制（NMS）算法实现：</p>
+<p>输入：检测器产生的一系列检测框<span class="math inline">\(𝐵 =\left\{
+𝐵_1, … , 𝐵_𝑛\right\}\)</span> 及对应的置信度<br />
+<span class="math inline">\(𝑠 =\left\{ 𝑠_1, … , 𝑠_𝑛\right\}\)</span>
+,IoU 阈值𝑡（通常0.7）<br />
+步骤：</p>
+<ol type="1">
+<li>初始化结果集𝑅 = ∅</li>
+<li>重复直至𝐵 为空集<br />
+① 找出𝐵 中置信度最大的框𝐵𝑖 并加入𝑅<br />
+② 从𝐵 中删除<span class="math inline">\(𝐵_𝑖\)</span>以及与<span
+class="math inline">\(𝐵_𝑖\)</span>交并比大于𝑡 的框<br />
+输出：结果集𝑅</li>
+</ol>
+<h3 id="边界框回归bounding-box-regression">边界框回归(Bounding Box
+Regression)</h3>
+<h4 id="问题">问题</h4>
+<p>滑窗（或其他方式产生的基准框）与物体精准边界通常有偏差</p>
+<h4 id="处理方法">处理方法</h4>
+<p>让模型在预测物体类别同时预测边界框相对于滑窗的偏移量</p>
+<pre class="mermaid">
+
+graph LR;
+
+A[图像x]---B[卷积网络]
+B---C[特征]
+C---D[全连接层]
+C---D2[全连接层]
+D---F[c+1维分类概率]
+D2---F2[4维偏移量]
+F---分类损失
+F2---回归损失
+
+</pre>
+<p>边界框编码Bbox Coding<br />
+边界框的绝对偏移量在数值上通常较大，不利于神经网络训练，通常需要对偏移量进行编码，作为回归模型的预测目标</p>
+<h2 id="两阶段算法概述">两阶段算法概述</h2>
+<p>两阶段的检测范式最早由R-CNN
+确立，因包含<strong>区域提议</strong>和<strong>区域识别</strong>两个阶段得名</p>
+<p>经历一些列发展到Faster R-CNN 和Mask RCNN逐渐成熟</p>
+<p>结合比较先进的主干网络和多尺度技术可以达到比较优越的检测精度，使用广泛</p>
+<p>近几年（2020~）随着单阶段算法精度和速度的提高逐渐被取代</p>
+<pre class="mermaid">
+
+graph LR;
+
+A[输入图像]---|传统视觉算法|B[区域提议]
+B---C[裁剪缩放将提议框内的图像缩放至固定大小]
+C---D[分类]
+
+D---[汇总再NMS产生最终结果]
+
+</pre>
+<p>R-CNN（Region-based CNN 2013）缺点</p>
+<p>慢：区域提议一般产生2000 个框，每个框都需要送入CNN
+前传，推理一张图要几秒至几十秒
+在裁剪提议框时进行了重复计算（物体重叠导致提议框重叠）</p>
+<p>Fast R-CNN (2014)</p>
+<p>对全图进行卷积网络产生了特征图
+在裁剪提议框后找到对应的特征图在分类。</p>
+<p>应为各个物体的提议框大小不一所以我们要在分类之前处理一下 使用RoI
+Pooling 和RoI Align</p>
+<p>RoI Pooling</p>
+<p>将不同尺寸的提议框处理成相同尺寸，使之可以送入后续的全连接层计算分类和回归</p>
+<ol type="1">
+<li><p>将提议框切分成固定数目的格子（上图中2×2，实际常用7×7，对齐ResNet等经典结构）</p></li>
+<li><p>如果格子边界不在整数坐标，则膨胀至整数坐标</p></li>
+<li><p>在每个格子内部池化，得到固定尺寸的输出特征图</p></li>
+</ol>
+<p>RoI Align</p>
+<p><img
+src="https://camo.qiitausercontent.com/ad51aede3139b16e684fec813def4034b5763519/68747470733a2f2f71696974612d696d6167652d73746f72652e73332e616d617a6f6e6177732e636f6d2f302f3133393830392f64306366326635362d363866382d353836632d313436392d3233373666656338323964392e706e67" /></p>
+<p>图片出处：https://qiita.com/yu4u/items/5cbe9db166a5d72f9eb8</p>
+<p>• 将提议区域切成固定数目的格子，例如7×7<br />
+• 在每个格子中，均匀选取若干采样点，如2×2=4 个<br />
+• 通过插值方法得到每个采样点处的精确特征<br />
+• 所有采样点做Pooling 得到输出结果</p>
+<p>Faster R-CNN (2015)</p>
+<p>增加了锚框Anchor的概念 以及从锚框到提议框的区域提议网络Region
+Proposal Network</p>
+<p>锚框Anchor</p>
+<p>在原图上设置不同尺寸的基准框，称为锚框，基于特征独立预测每个锚框中是否包含物体<br />
+① 可以生成不同尺寸的提议框<br />
+② 可以在同一位置生成多个提议框覆盖不同物体</p>
+<p>多尺度方法</p>
+<p>使用固定大小的卷积后的特征图预测不同尺度的物体效果比较差(特征图越小空间分辨率就越低预测小物体就会困难)
+所以有应对不同尺度物体的方法</p>
+<p>图像金字塔Image Pyramid</p>
+<p>比较直觉的方法 把一张图片 缩放成不同大小图分别检测
+就像使用不同度数的镜头看图会看到不同的物体。</p>
+<p>优势：算法不经改动可以适应不同尺度的物体<br />
+劣势：计算成本成倍增加</p>
+<p>层次化特征</p>
+<p>基于主干网络自身产生的多级特征图产生预测结果<br />
+由于不同层的感受大小不同，因此不同层级的特征天然适用于检测不同尺寸的物体</p>
+<p>优势：计算成本低<br />
+劣势：低层特征抽象级别不够，预测物体比较困难</p>
+<p>特征金字塔网络Feature Pyramid Network (2016)<br />
+在层次化特征基础上
+对低层特征用特征求和融入高层特征补充低层特征的语义信息</p>
+<p>单阶段目标检测算法</p>
+<p>One-Stage Detectors</p>
+<p>正负样本不均衡问题</p>
+<p>单阶段算法需要为每个位置的每个锚框预测一个类别，训练时需要为每个预测计算分类损失<br />
+图中锚框的数量远远大于真值框（数万vs
+数个），大量锚框的预测真值为背景（负样本）</p>
+<p>使用类别不平衡的数据训练出的分类器倾向给出背景预测，导致漏检</p>
+<p>锚框vs 无锚框</p>
+<p>基于锚框（Anchor-based）<br />
+• Faster R-CNN、YOLO v3 / v5、RetinaNet 都是基于锚框的检测算法<br />
+•
+模型基于特征预测对应位置的锚框中是否有物体，以及精确位置相对于锚框的偏移量<br />
+•
+需要手动设置锚框相关的超参数（如大小、长宽比、数量等），设置不当影响检测精度❌</p>
+<p>无锚框（Anchor-free）<br />
+•
+不依赖锚框，模型基于特征直接预测对应位置是否有物体，以及边界框的位置<br />
+• 边界框预测完全基于模型学习，不需要人工调整超参数✔️<br />
+• YOLO v1
+是无锚框算法，但由于提出时间较早，相关技术并不完善，性能不如基于锚框的算法</p>
+<h2 id="目标检测模型的评估方法">目标检测模型的评估方法</h2>
+<p>正确结果(True Positive
+TP)：算法检测到了某类物体(Positive)，图中也确实有这个物体，检测结果正确(True)<br />
+假阳性(False Positive
+FP)：算法检测到了某类物体(Positive)，但图中其实没有这个物体，检测结果错误(False)<br />
+假阴性(False Negative
+FN)：算法没有检测到物体(Negative)，但图中其实有某类物体，检测结果错误(False)</p>
+<p>检测到的衡量标准：对于某个检测框，图中存在同类型的真值框且与之交并比大于阈值（通常取0.5）</p>
+<h3 id="准确率precision-与召回率recall">准确率Precision
+与召回率Recall</h3>
+<p>召回率recall =正确结果总数/真值框总数=#TP/#TP + #FN</p>
+<p>准确率precision =正确结果总数/检测框总数=#TP/#TP + #FP</p>
+<p>两种极端情况：<br />
+1.
+检测器将所有锚框都判断为物体：召回率≈100%，但大量背景框预测为物体，FP很高，准确率很低</p>
+<ol start="2" type="1">
+<li>检测器只输出确信度最高的1个检测框：以很大概率检测正确，准确率=100%，但因为大量物体被预测<br />
+为背景，FN很高，召回率很低</li>
+</ol>
+<p>一个完美的检测器应该有100%召回率和100%的精度；在算法能力有限的情况下,应该平衡二者<br />
+通常做法：将检测框按置信度排序， 仅输出置信度最高的若干个框<br />
+置信度= 分类概率，或修正后的分类概率（YOLO、FCOS）</p>
+<h3 id="pr-曲线与ap-值">PR 曲线与AP 值</h3>
+<p><img
+src="https://www.jeremyjordan.me/content/images/2018/12/calculated-PR-curve-1.png" /></p>
+<p>图片出处
+https://www.jeremyjordan.me/evaluating-image-segmentation-models/</p>
+<p>为得到阈值无关的评分，可以遍历阈值，并对Precision 和Recall 求平均</p>
+<p>具体做法：</p>
+<ul>
+<li>检测框按置信度排序，取前K 个框计算Precision 和<br />
+Recall</li>
+<li>遍历K 从1 至全部检测框，将得到的Precision 和<br />
+Recall 值绘制在坐标系上，得到PR 曲线</li>
+<li>定义Average Precision = Precision 对Recall 的平均<br />
+值，即PR 曲线下的面积，作为检测器的性能衡量指标</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/OpenMMLab/" rel="tag"># OpenMMLab</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" rel="tag"># 计算机视觉</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/b64f8831.html" rel="prev" title="OpenMMLab实战营第三课 图像分类代码实战与超算平台介绍">
+                  <i class="fa fa-chevron-left"></i> OpenMMLab实战营第三课 图像分类代码实战与超算平台介绍
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/1554c19c.html" rel="next" title="openmmlab实战营第五课 MMDetection 代码教学">
+                  openmmlab实战营第五课 MMDetection 代码教学 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mkk</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js","integrity":"sha256-e0o3JYsdjqKajf9eOe22FhioYSz9WofRY4dLKo3F6do="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"catcooc","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body>
+</html>

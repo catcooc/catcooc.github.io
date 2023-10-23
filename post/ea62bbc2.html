@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"catcooc.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":null,"activeClass":"disqus"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="猫没卡通化你的训练集        猫卡通化过你的测试集        狗没卡通化过你的训练集         狗卡通化过你的测试集      为了体验一下协变量偏移（covariate shift）的例子我自己构建了一个猫狗分类的数据集，数据来自kaggla dogvscat的训练集，我把它重新分成了训练集">
+<meta property="og:type" content="article">
+<meta property="og:title" content="dogvscat 一个关于协变量偏移（covariate shift）的例子">
+<meta property="og:url" content="https://catcooc.github.io/post/ea62bbc2.html">
+<meta property="og:site_name" content="mkk的小窝">
+<meta property="og:description" content="猫没卡通化你的训练集        猫卡通化过你的测试集        狗没卡通化过你的训练集         狗卡通化过你的测试集      为了体验一下协变量偏移（covariate shift）的例子我自己构建了一个猫狗分类的数据集，数据来自kaggla dogvscat的训练集，我把它重新分成了训练集">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/cat.18.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/cat.10.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/dog.9835.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/dog.11712.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/cat.18.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/cat.10.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/dog.9835.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/dog.11712.jpg">
+<meta property="article:published_time" content="2023-06-27T08:39:31.000Z">
+<meta property="article:modified_time" content="2023-09-12T07:45:06.018Z">
+<meta property="article:author" content="mkk">
+<meta property="article:tag" content="pytorch">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/cat.18.jpg">
+
+
+<link rel="canonical" href="https://catcooc.github.io/post/ea62bbc2.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://catcooc.github.io/post/ea62bbc2.html","path":"post/ea62bbc2.html","title":"dogvscat 一个关于协变量偏移（covariate shift）的例子"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>dogvscat 一个关于协变量偏移（covariate shift）的例子 | mkk的小窝</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">mkk的小窝</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">这里存放了一些杂草</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-链接"><a href="/link/" rel="section"><i class="fas fa-link fa-fw"></i>链接</a></li><li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fas fa-heart fa-fw"></i>关于</a></li><li class="menu-item menu-item-留言板"><a href="/messageboard/" rel="section"><i class="fas fa-tags fa-fw"></i>留言板</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%90%86%E8%AE%BA%E9%83%A8%E5%88%86"><span class="nav-number">1.</span> <span class="nav-text">理论部分</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%81%8F%E7%A7%BB%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">分布偏移的类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8F%E5%8F%98%E9%87%8F%E5%81%8F%E7%A7%BB%E7%BA%A0%E6%AD%A3"><span class="nav-number">1.2.</span> <span class="nav-text">协变量偏移纠正</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">代码实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"><span class="nav-number">2.0.1.</span> <span class="nav-text">数据处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6test%E6%96%87%E4%BB%B6%E5%A4%B9%E9%87%8D%E5%91%BD%E5%90%8D%E4%B8%BAtestcartoon-%E8%BF%9B%E5%85%A5%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8B%E7%94%A8%E5%A6%82%E4%B8%8B%E7%9A%84%E4%BB%A3%E7%A0%81%E5%8D%A1%E9%80%9A%E5%8C%96%E6%B5%8B%E8%AF%95%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">2.0.1.1.</span> <span class="nav-text">复制test文件夹重命名为testcartoon
+进入文件夹下用如下的代码卡通化测试文件夹</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%8D%8F%E5%8F%98%E9%87%8F%E5%81%8F%E7%A7%BB%E6%A3%80%E6%B5%8B%E5%99%A8%E8%AE%AD%E7%BB%83%E9%9B%86"><span class="nav-number">2.0.1.2.</span> <span class="nav-text">创建协变量偏移检测器训练集</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%95%E7%A4%BA%E9%83%A8%E5%88%86%E5%9B%BE%E7%89%87"><span class="nav-number">2.1.</span> <span class="nav-text">展示部分图片</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%8F%E5%8F%98%E9%87%8F%E5%81%8F%E7%A7%BB%E6%A3%80%E6%B5%8B%E5%99%A8%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.1.1.</span> <span class="nav-text">协变量偏移检测器实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E6%A3%80%E6%B5%8B%E5%99%A8"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">定义检测器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-number">2.1.1.2.</span> <span class="nav-text">测试结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8D%8F%E5%8F%98%E9%87%8F%E5%81%8F%E7%A7%BB%E7%BA%A0%E6%AD%A3"><span class="nav-number">2.1.2.</span> <span class="nav-text">实现协变量偏移纠正</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%88%86%E7%B1%BB%E5%99%A8%E6%9D%A5%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%BB%93%E6%9E%9C"><span class="nav-number">2.1.2.1.</span> <span class="nav-text">使用分类器来训练模型的结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AF%94%E8%BE%83"><span class="nav-number">2.1.2.2.</span> <span class="nav-text">比较</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C"><span class="nav-number">2.1.3.</span> <span class="nav-text">结果</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="mkk"
+      src="/img/favicon.png">
+  <p class="site-author-name" itemprop="name">mkk</p>
+  <div class="site-description" itemprop="description">我在这里放了一些东西</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/catcooc" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;catcooc" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://catcooc.github.io/post/ea62bbc2.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/favicon.png">
+      <meta itemprop="name" content="mkk">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="mkk的小窝">
+      <meta itemprop="description" content="我在这里放了一些东西">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="dogvscat 一个关于协变量偏移（covariate shift）的例子 | mkk的小窝">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          dogvscat 一个关于协变量偏移（covariate shift）的例子
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-06-27 16:39:31" itemprop="dateCreated datePublished" datetime="2023-06-27T16:39:31+08:00">2023-06-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-09-12 15:45:06" itemprop="dateModified" datetime="2023-09-12T15:45:06+08:00">2023-09-12</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/post/ea62bbc2.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="post/ea62bbc2.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><table rules="none" align="center">
+<tr>
+<td>
+<center>
+<img src="/themes/butterfly/source/img/loading.gif" data-original="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/cat.18.jpg" width="100%" /><br />
+<br/><br />
+<font color="AAAAAA">猫没卡通化你的训练集</font><br />
+
+</center>
+</td>
+<td>
+<center>
+<img src="/themes/butterfly/source/img/loading.gif" data-original="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/cat.10.jpg" width="100%" /><br />
+<br/><br />
+<font color="AAAAAA">猫卡通化过你的测试集</font><br />
+
+</center>
+</td>
+<td>
+<center>
+<img src="/themes/butterfly/source/img/loading.gif" data-original="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/dog.9835.jpg" width="100%" /><br />
+<br/><br />
+<font color="AAAAAA">狗没卡通化过你的训练集</font><br />
+
+</center>
+</td>
+</td>
+<td>
+<center>
+<img src="/themes/butterfly/source/img/loading.gif" data-original="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/dog.11712.jpg" width="100%" /><br />
+<br/><br />
+<font color="AAAAAA">狗卡通化过你的测试集</font><br />
+
+</center>
+</td>
+</tr>
+</table>
+<p>为了体验一下协变量偏移（covariate
+shift）的例子我自己构建了一个猫狗分类的数据集，数据来自<a
+target="_blank" rel="noopener" href="https://www.kaggle.com/competitions/dogs-vs-cats/data?select=train.zip">kaggla
+dogvscat</a>的训练集，我把它重新分成了训练集和测试集两部分然后对测试集部分进行卡通化处理（<a
+target="_blank" rel="noopener" href="https://github.com/bryandlee/animegan2-pytorch">卡通化代码地址</a>）构成了一个协变量偏移的例子，试着实现协变量偏移纠正，不过可惜的事效果并不好。</p>
+<span id="more"></span>
+<h1 id="理论部分">理论部分</h1>
+<h2 id="分布偏移的类型">分布偏移的类型</h2>
+<p>训练数据分布<span class="math inline">\(p_S(x,y)\)</span>
+测试数据分布<span class="math inline">\(p_T(x,y)\)</span>
+一个清醒的现实是：如果没有任何关于<span
+class="math inline">\(p_S\)</span>和<span
+class="math inline">\(p_T\)</span>之间相互关系的假设，
+学习到一个分类器是不可能的</p>
+<p>如果<span
+class="math inline">\(p_S(x)=p_T(x)\)</span>但是标签全部翻转 <span
+class="math inline">\(p_S(y|x)=1-p_T(y|x)\)</span>如果我们此时简单的使用<span
+class="math inline">\(p_S(x)\)</span>那很难得到好的结果</p>
+<p>所以我们可以对数据发生的变化进行一些限制的假设，并以此设计可以检测偏移变化的算法，然后动态调整数据。</p>
+<ol type="1">
+<li><p>情况一协变量偏移（covariate shift）</p>
+<p><span class="math inline">\(p(x)\)</span>改变 <span
+class="math inline">\(p(y|x)\)</span>没有改变</p></li>
+<li><p>情况二<em>标签偏移</em>（label shift）<br />
+<span class="math inline">\(p(y)\)</span>改变 <span
+class="math inline">\(p(x|y)\)</span>没有改变</p></li>
+<li><p>情况三 概念偏移（concept shift）<br />
+标签的定义发生变化</p></li>
+</ol>
+<p>为了更好的认识这一问题我们要了解经验风险和真实风险的概念</p>
+<p><em>经验风险</em>（empirical risk)</p>
+<p><span class="math display">\[
+\underset{f}{\operatorname{minimize}} \frac{1}{n} \sum_{i=1}^n
+l\left(f\left(\mathbf{x}_i\right), y_i\right)
+\]</span><br />
+真实风险（true risk）<br />
+<span class="math display">\[
+E_{p(\mathbf{x}, y)}[l(f(\mathbf{x}), y)]=\iint l(f(\mathbf{x}), y)
+p(\mathbf{x}, y) d \mathbf{x} d y
+\]</span></p>
+<h2 id="协变量偏移纠正">协变量偏移纠正</h2>
+<p><span class="math inline">\(q(x)\)</span>源分布 <span
+class="math inline">\(p(x)\)</span>目标分布 假设：<span
+class="math inline">\(p(y|x)=q(y|x)\)</span><br />
+<span class="math display">\[
+\iint l(f(\mathbf{x}), y) p(y \mid \mathbf{x}) p(\mathbf{x}) d
+\mathbf{x} d y=\iint l(f(\mathbf{x}), y) q(y \mid \mathbf{x})
+q(\mathbf{x}) \frac{p(\mathbf{x})}{q(\mathbf{x})} d \mathbf{x} d y
+\]</span></p>
+<p>我们需要根据数据来自正确分布与来自错误分布的概率之比，
+来重新衡量每个数据样本的权重<br />
+<span class="math display">\[
+\beta_i \stackrel{\text { def }}{=}
+\frac{p\left(\mathbf{x}_i\right)}{q\left(\mathbf{x}_i\right)}
+\]</span></p>
+<p>将权重 <span class="math inline">\(\beta_i\)</span>
+代入到每个数据样本 <span class="math inline">\(\left(\mathbf{x}_i,
+y_i\right)\)</span> 中,
+我们可以使用”加权经验风险最小化“来训练模型:<br />
+<span class="math display">\[
+\underset{f}{\operatorname{minimize}} \frac{1}{n} \sum_{i=1}^n \beta_i
+l\left(f\left(\mathbf{x}_i\right), y_i\right) .
+\]</span><br />
+<span class="math inline">\(\beta_i\)</span>
+可以用一个二分类网络生成</p>
+<h1 id="代码实现">代码实现</h1>
+<h3 id="数据处理">数据处理</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> shutil</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="comment"># kaggle原始数据集地址</span></span><br><span class="line">original_dataset_dir = <span class="string">&#x27;....train&#x27;</span></span><br><span class="line">total_num = <span class="built_in">int</span>(<span class="built_in">len</span>(os.listdir(original_dataset_dir))/<span class="number">2</span>)   <span class="comment"># total_num=12500</span></span><br><span class="line"><span class="comment"># os.listdir() 可以查看当前目录下的文件和目录个数</span></span><br><span class="line">random_idx = np.array(<span class="built_in">range</span>(total_num))</span><br><span class="line">np.random.shuffle(random_idx)   <span class="comment"># np.random.shuffle()  对第一维的随机打乱</span></span><br><span class="line">base_dir = <span class="string">&#x27;...dogvscat&#x27;</span>   <span class="comment"># 待处理的数据集地址</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(base_dir):</span><br><span class="line">    os.mkdir(base_dir)               <span class="comment"># 创建目录</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># 训练集、测试集的划分</span></span><br><span class="line">sub_dirs = [<span class="string">&#x27;train&#x27;</span>, <span class="string">&#x27;test&#x27;</span>]</span><br><span class="line">animals = [<span class="string">&#x27;cats&#x27;</span>, <span class="string">&#x27;dogs&#x27;</span>]</span><br><span class="line">train_idx = random_idx[:<span class="built_in">int</span>(total_num * <span class="number">0.8</span>):]    <span class="comment"># train_idx=10000</span></span><br><span class="line">test_idx = random_idx[<span class="built_in">int</span>(total_num * <span class="number">0.8</span>)::]  <span class="comment"># test_idx=2500</span></span><br><span class="line">numbers = [train_idx, test_idx]</span><br><span class="line"><span class="keyword">for</span> idx, sub_dir <span class="keyword">in</span> <span class="built_in">enumerate</span>(sub_dirs):</span><br><span class="line">    <span class="built_in">dir</span> = os.path.join(base_dir, sub_dir)   <span class="comment"># os.path.join()函数连接两个或更多的路径名组件</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(<span class="built_in">dir</span>):</span><br><span class="line">        os.mkdir(<span class="built_in">dir</span>)</span><br><span class="line">    <span class="keyword">for</span> animal <span class="keyword">in</span> animals:</span><br><span class="line">        animal_dir = os.path.join(<span class="built_in">dir</span>, animal)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(animal_dir):</span><br><span class="line">            os.mkdir(animal_dir)</span><br><span class="line">        fnames = [animal[:-<span class="number">1</span>] + <span class="string">&#x27;.&#123;&#125;.jpg&#x27;</span>.<span class="built_in">format</span>(i) <span class="keyword">for</span> i <span class="keyword">in</span> numbers[idx]]</span><br><span class="line">        <span class="keyword">for</span> fname <span class="keyword">in</span> fnames:</span><br><span class="line">            src = os.path.join(original_dataset_dir, fname)</span><br><span class="line">            dst = os.path.join(animal_dir, fname)</span><br><span class="line">            shutil.copyfile(src, dst)   <span class="comment"># src复制到dst中去</span></span><br><span class="line"> </span><br><span class="line">        <span class="comment"># 验证训练集、验证集、测试集的划分的照片数目</span></span><br><span class="line">        <span class="built_in">print</span>(animal_dir + <span class="string">&#x27; total images : %d&#x27;</span> % (<span class="built_in">len</span>(os.listdir(animal_dir))))</span><br></pre></td></tr></table></figure>
+<h4
+id="复制test文件夹重命名为testcartoon-进入文件夹下用如下的代码卡通化测试文件夹">复制test文件夹重命名为testcartoon
+进入文件夹下用如下的代码卡通化测试文件夹</h4>
+<p><code>python test.py --input_dir ./samples/inputs1 --output dir ./samples/result1/ --device cpu</code></p>
+<h4 id="创建协变量偏移检测器训练集">创建协变量偏移检测器训练集</h4>
+<p>在dogvscat文件夹下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> train2</span><br><span class="line"><span class="built_in">cd</span> train2</span><br><span class="line"><span class="built_in">mkdir</span> cartoon</span><br><span class="line"><span class="built_in">cp</span> ../../testcartoon/cats/*  .</span><br><span class="line"><span class="built_in">cp</span>  ../../testcartoon/dogs/* .</span><br><span class="line"><span class="built_in">cd</span> ..</span><br><span class="line"><span class="built_in">mkdir</span> normal</span><br><span class="line"><span class="built_in">cd</span> normal</span><br><span class="line"><span class="built_in">cp</span> ../../train/cats/*  .</span><br><span class="line"><span class="built_in">cp</span> ../../train/dogs/*  .</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> shutil</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="comment"># 处理过的数据文件</span></span><br><span class="line">original_dataset_dir = <span class="string">&#x27;.....train2&#x27;</span><span class="comment">#你的文件位置</span></span><br><span class="line"><span class="keyword">for</span> j <span class="keyword">in</span> [<span class="string">&#x27;cartoon&#x27;</span>,<span class="string">&#x27;normal&#x27;</span>]:</span><br><span class="line">    original_dataset_dir2 = os.path.join(original_dataset_dir,j)</span><br><span class="line">    ll=os.listdir(original_dataset_dir2)</span><br><span class="line">    </span><br><span class="line">    total_num = <span class="built_in">int</span>(<span class="built_in">len</span>(ll))</span><br><span class="line">    random_idx = np.array(<span class="built_in">range</span>(total_num))</span><br><span class="line">    np.random.shuffle(random_idx)   <span class="comment"># np.random.shuffle()  对第一维的随机打乱</span></span><br><span class="line">    base_dir = <span class="string">&#x27;...cartoonvsnormal&#x27;</span>   <span class="comment"># 待处理的数据集地址</span></span><br><span class="line">    <span class="comment">#base_dir=os.path.join(base_dir,j)</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(base_dir):</span><br><span class="line">           os.mkdir(base_dir)               <span class="comment"># 创建目录</span></span><br><span class="line">    train_idx = random_idx[:<span class="built_in">int</span>(total_num * <span class="number">0.8</span>):]    <span class="comment"># train_idx=10000</span></span><br><span class="line">    test_idx = random_idx[<span class="built_in">int</span>(total_num * <span class="number">0.8</span>)::]</span><br><span class="line">    <span class="built_in">print</span>(j,<span class="string">&#x27;train:&#x27;</span>,<span class="built_in">len</span>(train_idx),<span class="string">&#x27;test&#x27;</span>,<span class="built_in">len</span>(test_idx))</span><br><span class="line">    dir1=os.path.join(base_dir, <span class="string">&#x27;train&#x27;</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(dir1):</span><br><span class="line">          os.mkdir(dir1) </span><br><span class="line">    dir1=os.path.join(dir1, j)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(dir1):</span><br><span class="line">          os.mkdir(dir1)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> train_idx:</span><br><span class="line">        src = os.path.join(original_dataset_dir2, ll[i])</span><br><span class="line">        dst = os.path.join(dir1, ll[i])</span><br><span class="line">        shutil.copyfile(src, dst)</span><br><span class="line">    <span class="built_in">print</span>(j,<span class="string">&#x27;train&#x27;</span>,<span class="built_in">len</span>(os.listdir(dir1)))</span><br><span class="line">    dir1=os.path.join(base_dir, <span class="string">&#x27;test&#x27;</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(dir1):</span><br><span class="line">          os.mkdir(dir1) </span><br><span class="line">    dir1=os.path.join(dir1, j)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(dir1):</span><br><span class="line">          os.mkdir(dir1)      </span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> test_idx:</span><br><span class="line">        src = os.path.join(original_dataset_dir2, ll[i])</span><br><span class="line">        dst = os.path.join(dir1, ll[i])</span><br><span class="line">        shutil.copyfile(src, dst)</span><br><span class="line">    <span class="built_in">print</span>(j,<span class="string">&#x27;test&#x27;</span>,<span class="built_in">len</span>(os.listdir(dir1)))</span><br></pre></td></tr></table></figure>
+<p>然后你可以删除train2</p>
+<p>以下是大概的文件结构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">│─cartoonvsnormal</span><br><span class="line">│ ├───train</span><br><span class="line">│ │	 │─cats</span><br><span class="line">│ │   └─dogs</span><br><span class="line">│ ├───test</span><br><span class="line">│     ├─cats</span><br><span class="line">│     └─dogs</span><br><span class="line">|</span><br><span class="line">|</span><br><span class="line">|───dogvscat</span><br><span class="line">│   ├───train</span><br><span class="line">│   │	│─cartoon</span><br><span class="line">│   │  	└─normal</span><br><span class="line">│   ├───test</span><br><span class="line">│   │  ├─cartoon</span><br><span class="line">│   │  └─normal</span><br><span class="line">│   ├───testcartoon</span><br><span class="line">│      ├─cartoon</span><br><span class="line">│      └─normal</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="展示部分图片">展示部分图片</h2>
+<table rules="none" align="center">
+<tr>
+<td>
+<center>
+<img src="/themes/butterfly/source/img/loading.gif" data-original="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/cat.18.jpg" width="100%" /><br />
+<br/><br />
+<font color="AAAAAA">猫没卡通化你的训练集</font><br />
+
+</center>
+</td>
+<td>
+<center>
+<img src="/themes/butterfly/source/img/loading.gif" data-original="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/cat.10.jpg" width="100%" /><br />
+<br/><br />
+<font color="AAAAAA">猫卡通化过你的测试集</font><br />
+
+</center>
+</td>
+<td>
+<center>
+<img src="/themes/butterfly/source/img/loading.gif" data-original="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/dog.9835.jpg" width="100%" /><br />
+<br/><br />
+<font color="AAAAAA">狗没卡通化过你的训练集</font><br />
+
+</center>
+</td>
+</td>
+<td>
+<center>
+<img src="/themes/butterfly/source/img/loading.gif" data-original="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/dog.11712.jpg" width="100%" /><br />
+<br/><br />
+<font color="AAAAAA">狗卡通化过你的测试集</font><br />
+
+</center>
+</td>
+</tr>
+</table>
+<p>别问为什么没有对齐就是要逼死强迫症
+不过值得一提这些图片是我挑选过的卡通化有些图效果不是很好
+你可以尝试修改代码让它效果更好 加油</p>
+<h3 id="协变量偏移检测器实现">协变量偏移检测器实现</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch </span><br><span class="line"><span class="keyword">import</span> torchvision</span><br><span class="line"><span class="keyword">from</span> torchvision <span class="keyword">import</span> datasets,models,transforms</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> torch.autograd <span class="keyword">import</span> Variable</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.utils.data</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"><span class="keyword">from</span> d2l <span class="keyword">import</span> torch <span class="keyword">as</span> d2l<span class="comment">#李沐动手学习深度学习的课的库 没有可以注释掉</span></span><br><span class="line"><span class="keyword">import</span> gc </span><br><span class="line">gc.collect()<span class="comment">#清理内存</span></span><br><span class="line"><span class="comment">#加载函数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">getmean_str</span>(<span class="params">data_dir,name</span>):</span><br><span class="line">    data_trainsforms = transforms.Compose([</span><br><span class="line">    transforms.Resize((<span class="number">224</span>,<span class="number">224</span>)),</span><br><span class="line">    transforms.ToTensor(),</span><br><span class="line">    ])</span><br><span class="line">    image_datasets = datasets.ImageFolder(root=data_dir,</span><br><span class="line">                          transform=data_trainsforms)</span><br><span class="line">    data_loader = torch.utils.data.DataLoader(</span><br><span class="line">        image_datasets, batch_size=<span class="number">1</span>, shuffle=<span class="literal">False</span>, num_workers=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">    mean = torch.zeros(<span class="number">3</span>)</span><br><span class="line">    std = torch.zeros(<span class="number">3</span>)</span><br><span class="line">    <span class="keyword">for</span> X, _ <span class="keyword">in</span> data_loader:</span><br><span class="line">        <span class="keyword">for</span> d <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>):</span><br><span class="line">            mean[d] += X[:, d, :, :].mean()</span><br><span class="line">            std[d] += X[:, d, :, :].std()</span><br><span class="line">    mean.div_(<span class="built_in">len</span>(image_datasets))</span><br><span class="line">    std.div_(<span class="built_in">len</span>(image_datasets))</span><br><span class="line">    <span class="built_in">print</span>(name ,<span class="string">&quot; mean:&quot;</span>,mean,<span class="string">&quot;std:&quot;</span>,std)</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">list</span>(mean.numpy()), <span class="built_in">list</span>(std.numpy())</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">load_data_cartoonvsnormal</span>(<span class="params">data_dir,meanlist, stdlist,batch_size=<span class="number">32</span></span>): </span><br><span class="line">    data_trainsforms = transforms.Compose([</span><br><span class="line">    transforms.Resize((<span class="number">224</span>,<span class="number">224</span>)),</span><br><span class="line">    transforms.ToTensor(),</span><br><span class="line">    transforms.Normalize(meanlist, stdlist),</span><br><span class="line">    ])</span><br><span class="line">    <span class="comment">#拼接路径</span></span><br><span class="line">    image_datasets = datasets.ImageFolder(root=data_dir,</span><br><span class="line">                          transform=data_trainsforms)</span><br><span class="line">    <span class="comment">#数据加载器</span></span><br><span class="line">    data_iter=torch.utils.data.DataLoader(image_datasets, batch_size=batch_size, shuffle=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">return</span> (data_iter,image_datasets)<span class="comment">#(train_iter,test_iter,image_train_datasets,image_test_datasets)</span></span><br><span class="line"><span class="comment">#训练函数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">train_epoch_ch4_9</span>(<span class="params">net, train_iter, loss, updater, Use_gpu,detector=<span class="literal">None</span></span>): </span><br><span class="line">    train_acc=<span class="number">0.0</span></span><br><span class="line">    train_loss=<span class="number">0.0</span></span><br><span class="line">    <span class="keyword">for</span> batch,data <span class="keyword">in</span> <span class="built_in">enumerate</span>(train_iter,<span class="number">1</span>):</span><br><span class="line">            X,y = data</span><br><span class="line">            <span class="keyword">if</span> Use_gpu:</span><br><span class="line">                X,y = Variable(X.cuda()),Variable(y.cuda())</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                X,y = Variable(X),Variable(y)</span><br><span class="line">            y_hat = net(X)</span><br><span class="line">            <span class="keyword">if</span> detector!=<span class="literal">None</span>:</span><br><span class="line">                </span><br><span class="line">                beta= detector(X.detach())</span><br><span class="line">                <span class="keyword">if</span> Use_gpu:</span><br><span class="line">                    beta=Variable(beta.cuda())</span><br><span class="line">            optimizer.zero_grad()</span><br><span class="line">            l = loss(y_hat,y) <span class="keyword">if</span> detector==<span class="literal">None</span> <span class="keyword">else</span> loss(y_hat,y,beta)</span><br><span class="line">            l.backward()<span class="comment">#反向传播</span></span><br><span class="line">            optimizer.step()<span class="comment">#优化</span></span><br><span class="line">            _,pred =torch.<span class="built_in">max</span>(y_hat,<span class="number">1</span>)</span><br><span class="line">            train_acc += torch.<span class="built_in">sum</span>(pred == y)</span><br><span class="line">            train_loss += l.item()</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">if</span> batch%<span class="number">200</span> == <span class="number">0</span> :</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;Batch:&#123;&#125;,Train Loss:&#123;:.4f&#125;,Train ACC:&#123;:.4f&#125;%&quot;</span>.<span class="built_in">format</span>(batch,train_loss/batch,<span class="number">100</span>*train_acc/(y.numel()*batch)))</span><br><span class="line">    <span class="keyword">return</span> (train_loss/(<span class="built_in">len</span>(train_iter))),(train_acc/((batch_size)*<span class="built_in">len</span>(train_iter))).cpu().numpy()</span><br><span class="line"><span class="comment">#评价函数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">evaluate_accuracy_ch4_9</span>(<span class="params">net, data_iter, Use_gpu</span>): </span><br><span class="line">    <span class="keyword">if</span> Use_gpu:</span><br><span class="line">        net = net.cuda()</span><br><span class="line">    net.<span class="built_in">eval</span>()  <span class="comment"># 将模型设置为评估模式</span></span><br><span class="line">    <span class="comment">#metric = d2l.Accumulator(2)  # 正确预测数、预测总数</span></span><br><span class="line">    test_acc=<span class="number">0.0</span></span><br><span class="line">    number=<span class="number">0.0</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        <span class="keyword">for</span> data <span class="keyword">in</span> data_iter:</span><br><span class="line">            X,y=data</span><br><span class="line">            <span class="keyword">if</span> Use_gpu:<span class="comment">#有gpu在gpu下评估</span></span><br><span class="line">                X,y = Variable(X.cuda()),Variable(y.cuda())</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                X,y = Variable(X),Variable(y)</span><br><span class="line">            y_pred = net(X)<span class="comment">#metric.add(d2l.accuracy(net(X), y), y.numel())</span></span><br><span class="line">            _,pred =torch.<span class="built_in">max</span>(y_pred,<span class="number">1</span>)</span><br><span class="line">            test_acc += torch.<span class="built_in">sum</span>(pred == y)</span><br><span class="line">            number+=y.numel()</span><br><span class="line">        test_acc=((test_acc / number).cpu().numpy())    </span><br><span class="line">    <span class="keyword">return</span> test_acc</span><br><span class="line"><span class="comment">#训练函数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">train_ch4_9</span>(<span class="params">net, train_iter, test_iter, loss, num_epochs, updater,Use_gpu,test_iter2=<span class="literal">None</span>,savename=<span class="string">&#x27;../data/ch04-4-9-2and4-9-3/covariate_shift_detectormodel.pth&#x27;</span>,detector=<span class="literal">None</span></span>): </span><br><span class="line">    <span class="keyword">if</span> test_iter2==<span class="literal">None</span>:</span><br><span class="line">        animator = d2l.Animator(xlabel=<span class="string">&#x27;epoch&#x27;</span>,ylabel=<span class="string">&#x27;Y&#x27;</span>, xlim=[<span class="number">1</span>, num_epochs],</span><br><span class="line">                        legend=[<span class="string">&#x27;train loss&#x27;</span>, <span class="string">&#x27;train acc&#x27;</span>, <span class="string">&#x27;test acc&#x27;</span>])<span class="comment">#李沐动手学习深度学习的课的库 没有可以注释掉</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        animator = d2l.Animator(xlabel=<span class="string">&#x27;epoch&#x27;</span>,ylabel=<span class="string">&#x27;Y&#x27;</span>, xlim=[<span class="number">1</span>, num_epochs],</span><br><span class="line">                        legend=[<span class="string">&#x27;train loss&#x27;</span>, <span class="string">&#x27;train acc&#x27;</span>, <span class="string">&#x27;test cartoon acc&#x27;</span>,<span class="string">&#x27;test normal acc &#x27;</span>])<span class="comment">#李沐动手学习深度学习的课的库 没有可以注释掉</span></span><br><span class="line">        </span><br><span class="line">    <span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(num_epochs):</span><br><span class="line">        train_metrics = train_epoch_ch4_9(net, train_iter, loss, updater,Use_gpu,detector)</span><br><span class="line">        test_acc = evaluate_accuracy_ch4_9(net, test_iter,Use_gpu)</span><br><span class="line">        <span class="keyword">if</span> test_iter2!=<span class="literal">None</span>:</span><br><span class="line">            test_acc2 = evaluate_accuracy_ch4_9(net, test_iter2,Use_gpu)</span><br><span class="line">            animator.add(epoch + <span class="number">1</span>, train_metrics + (test_acc,test_acc2,))<span class="comment">#李沐动手学习深度学习的课的库 没有可以注释掉</span></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;epoch&#123;&#125; Loss:&#123;:.4f&#125; Train Acc:&#123;:.4f&#125;% Test Cartoon Acc:&#123;:.4f&#125;% Test Normal Acc:&#123;:.4f&#125;%&quot;</span>.<span class="built_in">format</span>(epoch+<span class="number">1</span>, train_metrics[<span class="number">0</span>], <span class="number">100</span>*train_metrics[<span class="number">1</span>],<span class="number">100</span>*test_acc,<span class="number">100</span>*test_acc2))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            animator.add(epoch + <span class="number">1</span>, train_metrics + (test_acc,))<span class="comment">#李沐动手学习深度学习的课的库 没有可以注释掉</span></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;epoch&#123;&#125; Loss:&#123;:.4f&#125; Train Acc:&#123;:.4f&#125;% Test  Acc:&#123;:.4f&#125;%&quot;</span>.<span class="built_in">format</span>(epoch+<span class="number">1</span>, train_metrics[<span class="number">0</span>], <span class="number">100</span>*train_metrics[<span class="number">1</span>],<span class="number">100</span>*test_acc))</span><br><span class="line">    </span><br><span class="line">    train_loss, train_acc = train_metrics</span><br><span class="line">   </span><br><span class="line">    torch.save(net.state_dict(),savename)</span><br><span class="line">    </span><br><span class="line">    torch.cuda.empty_cache()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;save&quot;</span>,savename,<span class="string">&quot;over&quot;</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">assert</span> train_loss &lt; <span class="number">0.5</span>, train_loss</span><br><span class="line">    <span class="keyword">assert</span> train_acc &lt;= <span class="number">1</span> <span class="keyword">and</span> train_acc &gt; <span class="number">0.7</span>, train_acc</span><br><span class="line">    <span class="keyword">assert</span> test_acc &lt;= <span class="number">1</span> <span class="keyword">and</span> test_acc &gt; <span class="number">0.7</span>, test_acc</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#数据加载</span></span><br><span class="line"></span><br><span class="line">batch_size=<span class="number">32</span></span><br><span class="line">data_dir = <span class="string">&quot;../data/ch04-4-9-2and4-9-3/cartoonvsnormal&quot;</span></span><br><span class="line">mean_train_list,std_train_list=getmean_str(os.path.join(data_dir, <span class="string">&#x27;train&#x27;</span>),<span class="string">&#x27;train&#x27;</span>)</span><br><span class="line">mean_test_list,std_test_list=getmean_str(os.path.join(data_dir, <span class="string">&#x27;test&#x27;</span>),<span class="string">&#x27;test&#x27;</span>)</span><br><span class="line">cartoon_num=<span class="number">1.0</span>*(<span class="built_in">len</span>(os.listdir(os.path.join(data_dir, <span class="string">&#x27;train&#x27;</span>,<span class="string">&#x27;cartoon&#x27;</span>)))+<span class="built_in">len</span>(os.listdir(os.path.join(data_dir, <span class="string">&#x27;test&#x27;</span>,<span class="string">&#x27;cartoon&#x27;</span>))))</span><br><span class="line">normal_num=<span class="number">1.0</span>*(<span class="built_in">len</span>(os.listdir(os.path.join(data_dir, <span class="string">&#x27;train&#x27;</span>,<span class="string">&#x27;normal&#x27;</span>)))+<span class="built_in">len</span>(os.listdir(os.path.join(data_dir, <span class="string">&#x27;test&#x27;</span>,<span class="string">&#x27;normal&#x27;</span>))))</span><br><span class="line">train_iter,image_train_datasets=load_data_cartoonvsnormal(os.path.join(data_dir, <span class="string">&#x27;train&#x27;</span>),mean_train_list,std_train_list,batch_size)</span><br><span class="line">test_iter,image_test_datasets=load_data_cartoonvsnormal(os.path.join(data_dir, <span class="string">&#x27;test&#x27;</span>),mean_test_list,std_test_list,batch_size)</span><br><span class="line">index_classes = <span class="built_in">list</span>(image_test_datasets.class_to_idx.keys())</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;类别一 &#123;&#125;，数量&#123;&#125;，类别二 &#123;&#125; 数量&#123;&#125;&quot;</span>.<span class="built_in">format</span>(index_classes[<span class="number">0</span>],cartoon_num,index_classes[<span class="number">1</span>],normal_num))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;类别一 &#123;&#125;，数量&#123;&#125;，类别二 &#123;&#125; 数量&#123;&#125;&quot;</span>.<span class="built_in">format</span>(index_classes[<span class="number">0</span>],cartoon_num,index_classes[<span class="number">1</span>],normal_num))</span><br><span class="line"><span class="comment">#加载模型</span></span><br><span class="line">model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)</span><br><span class="line">Use_gpu = torch.cuda.is_available()</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> parma <span class="keyword">in</span> model.parameters():</span><br><span class="line">    parma.requires_grad = <span class="literal">False</span><span class="comment">#屏蔽预训练模型的权重，只训练最后一层的全连接的权重</span></span><br><span class="line">model.fc = torch.nn.Linear(<span class="number">2048</span>,<span class="number">2</span>)</span><br><span class="line">nn.init.xavier_uniform_(model.fc.weight)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> Use_gpu:</span><br><span class="line">    model = model.cuda()</span><br><span class="line"></span><br><span class="line"><span class="comment">#损失函数和优化器</span></span><br><span class="line">weight=torch.tensor([normal_num,cartoon_num])</span><br><span class="line">weight=weight.cuda() <span class="keyword">if</span> Use_gpu <span class="keyword">else</span> weight</span><br><span class="line">loss_f = torch.nn.CrossEntropyLoss(weight=weight)<span class="comment">#不同类别数据量不同 添加权重来平衡</span></span><br><span class="line">optimizer = torch.optim.SGD(model.fc.parameters(),lr = <span class="number">1e-4</span>)</span><br><span class="line"></span><br><span class="line">num_epochs = <span class="number">15</span></span><br><span class="line">train_ch4_9(model, train_iter, test_iter, loss_f, num_epochs,optimizer,Use_gpu)</span><br><span class="line"><span class="comment">#清除内存</span></span><br><span class="line"><span class="keyword">del</span> model</span><br><span class="line">torch.cuda.empty_cache()</span><br></pre></td></tr></table></figure>
+<h4 id="定义检测器">定义检测器</h4>
+<p>这里convariate_shift_detecor<span class="math inline">\((x_i)=\beta_i
+=\frac{p\left(\mathbf{x}_i\right)}{q\left(\mathbf{x}_i\right)}\)</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span>  <span class="title function_">covariate_shift_detector</span>(<span class="params">input_image,model_pth=<span class="string">&#x27;../data/ch04-4-9-2and4-9-3/covariate_shift_detectormodel.pth&#x27;</span></span>):</span><br><span class="line">    softmax=nn.Softmax(dim = <span class="number">1</span>)</span><br><span class="line">    Use_gpu = torch.cuda.is_available()</span><br><span class="line">    model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)</span><br><span class="line">    model.fc = torch.nn.Linear(<span class="number">2048</span>,<span class="number">2</span>)</span><br><span class="line">    model.load_state_dict(torch.load(model_pth))</span><br><span class="line">    <span class="keyword">if</span> Use_gpu:</span><br><span class="line">        model = model.cuda()</span><br><span class="line">    model.<span class="built_in">eval</span>()</span><br><span class="line">    beta=<span class="keyword">lambda</span> x:<span class="built_in">min</span>(x[<span class="number">0</span>][<span class="number">0</span>]/x[<span class="number">0</span>][<span class="number">1</span>],<span class="number">1.0</span>)</span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(input_image)==<span class="number">1</span>:</span><br><span class="line">            output=beta(softmax(model(input_image)))</span><br><span class="line">            </span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            output=torch.tensor(<span class="built_in">list</span>(<span class="built_in">map</span>(<span class="keyword">lambda</span> x: beta(softmax(model(torch.unsqueeze(x,<span class="number">0</span>)))),input_image )))</span><br><span class="line">        <span class="keyword">del</span> model</span><br><span class="line">        torch.cuda.empty_cache()</span><br><span class="line">        <span class="keyword">return</span> output</span><br></pre></td></tr></table></figure>
+<h4 id="测试结果">测试结果</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="comment">#test_iter,image_test_datasets=load_data_cartoonvsnormal(os.path.join(data_dir, &#x27;test&#x27;),batch_size)</span></span><br><span class="line">testnum=random.randint(<span class="number">0</span>,<span class="built_in">len</span>(image_test_datasets)-<span class="number">1</span>)</span><br><span class="line">index_classes = <span class="built_in">list</span>(image_test_datasets.class_to_idx.keys())</span><br><span class="line">input_image=torch.unsqueeze(image_test_datasets[testnum][<span class="number">0</span>],<span class="number">0</span>)</span><br><span class="line"><span class="keyword">if</span> torch.cuda.is_available():</span><br><span class="line">    input_image=input_image.cuda()</span><br><span class="line">output=index_classes[<span class="number">0</span>] <span class="keyword">if</span> covariate_shift_detector(input_image)&gt;=<span class="number">1</span> <span class="keyword">else</span> index_classes[<span class="number">1</span>]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;testnum &quot;</span>,testnum,<span class="string">&quot; 推断类别：&quot;</span>,output,<span class="string">&quot;实际类别：&quot;</span>,index_classes[image_test_datasets[testnum][<span class="number">1</span>]])</span><br><span class="line"><span class="keyword">del</span> input_image</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">gc.collect()</span><br><span class="line">Use_gpu = torch.cuda.is_available()</span><br><span class="line"><span class="keyword">if</span> Use_gpu:</span><br><span class="line">    torch.cuda.empty_cache()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;clear&#x27;</span>)</span><br><span class="line">input_image=[i[<span class="number">0</span>].cuda() <span class="keyword">for</span> i <span class="keyword">in</span> image_test_datasets] <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> [i[<span class="number">0</span>] <span class="keyword">for</span> i <span class="keyword">in</span> image_test_datasets]</span><br><span class="line">output=covariate_shift_detector(input_image)</span><br><span class="line">test_label=torch.tensor([i[<span class="number">1</span>] <span class="keyword">for</span> i <span class="keyword">in</span> image_test_datasets])</span><br><span class="line">cartoonacc=torch.tensor(<span class="built_in">list</span>(<span class="built_in">map</span>(<span class="keyword">lambda</span> x: <span class="number">1</span> <span class="keyword">if</span> x &gt;=<span class="number">1</span> <span class="keyword">else</span> <span class="number">0</span> ,output-torch.mul(output,test_label)))).<span class="built_in">sum</span>()/(<span class="built_in">len</span>(test_label)-test_label.<span class="built_in">sum</span>())</span><br><span class="line">normalacc=torch.tensor(<span class="built_in">list</span>(<span class="built_in">map</span>(<span class="keyword">lambda</span> x: <span class="number">1</span> <span class="keyword">if</span> <span class="number">0</span>&lt;x &lt; <span class="number">1</span> <span class="keyword">else</span> <span class="number">0</span> ,torch.mul(output,test_label)))).<span class="built_in">sum</span>()/(test_label.<span class="built_in">sum</span>())</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;卡通图片预测正确率:&#123;:.4f&#125;% ,正常图片预测正确率:&#123;:.4f&#125;%&#x27;</span>.<span class="built_in">format</span>(<span class="number">100</span>*cartoonacc,<span class="number">100</span>*normalacc))</span><br><span class="line"><span class="keyword">del</span> input_image</span><br></pre></td></tr></table></figure>
+<h3 id="实现协变量偏移纠正">实现协变量偏移纠正</h3>
+<p>首先展示没有使用分类器来训练模型的结果，可以看到训练的后期，即使各个数据曲线已经趋平，训练准确率仍然高于测试准确率。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#import库 以及 用到的函数定义见4.9.2</span></span><br><span class="line"><span class="comment">#数据加载</span></span><br><span class="line"></span><br><span class="line">batch_size=<span class="number">32</span></span><br><span class="line">data_dir = <span class="string">&quot;../data/ch04-4-9-2and4-9-3/dogvscat&quot;</span></span><br><span class="line">mean_train_list,std_train_list=getmean_str(os.path.join(data_dir, <span class="string">&#x27;train&#x27;</span>),<span class="string">&#x27;train&#x27;</span>)</span><br><span class="line">mean_testcartoon_list,std_testcartoon_list=getmean_str(os.path.join(data_dir, <span class="string">&#x27;testcartoon&#x27;</span>),<span class="string">&#x27;testcartoon&#x27;</span>)</span><br><span class="line">mean_testnormal_list,std_testnormal_list=getmean_str(os.path.join(data_dir, <span class="string">&#x27;test&#x27;</span>),<span class="string">&#x27;testnormal&#x27;</span>)</span><br><span class="line">train_iter,image_train_datasets=load_data_cartoonvsnormal(os.path.join(data_dir, <span class="string">&#x27;train&#x27;</span>),mean_train_list,std_train_list,batch_size)</span><br><span class="line">testcartoon_iter,image_testcartoon_datasets=load_data_cartoonvsnormal(os.path.join(data_dir, <span class="string">&#x27;testcartoon&#x27;</span>),mean_testcartoon_list,std_testcartoon_list,batch_size)</span><br><span class="line">testnormal_iter,image_testnormal_datasets=load_data_cartoonvsnormal(os.path.join(data_dir, <span class="string">&#x27;test&#x27;</span>),mean_testnormal_list,std_testnormal_list,batch_size)</span><br><span class="line"><span class="comment">#加载模型</span></span><br><span class="line">model_no_detector = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)</span><br><span class="line">Use_gpu = torch.cuda.is_available()</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> parma <span class="keyword">in</span> model_no_detector.parameters():</span><br><span class="line">    parma.requires_grad = <span class="literal">False</span><span class="comment">#屏蔽预训练模型的权重，只训练最后一层的全连接的权重</span></span><br><span class="line">model_no_detector.fc = torch.nn.Linear(<span class="number">2048</span>,<span class="number">2</span>)</span><br><span class="line">nn.init.xavier_uniform_(model_no_detector.fc.weight);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> Use_gpu:</span><br><span class="line">    model_no_detector = model_no_detector.cuda()</span><br><span class="line"></span><br><span class="line"><span class="comment">#损失函数和优化器</span></span><br><span class="line">loss_f = torch.nn.CrossEntropyLoss()</span><br><span class="line">optimizer = torch.optim.SGD(model_no_detector.fc.parameters(),lr =  <span class="number">1e-4</span>)</span><br><span class="line"></span><br><span class="line">num_epochs = <span class="number">10</span></span><br><span class="line">train_ch4_9(model_no_detector, train_iter, testcartoon_iter, loss_f, num_epochs,optimizer,Use_gpu,test_iter2=testnormal_iter,savename=<span class="string">&#x27;../data/ch04-4-9-2and4-9-3/dogvscatwithoutdetectormodel.pth&#x27;</span>)</span><br><span class="line"><span class="comment">#清除内存</span></span><br><span class="line"><span class="keyword">del</span> model_no_detector</span><br><span class="line">torch.cuda.empty_cache()</span><br></pre></td></tr></table></figure>
+<h4 id="使用分类器来训练模型的结果">使用分类器来训练模型的结果</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">gc.collect()<span class="comment">#内存清理</span></span><br><span class="line"><span class="comment">#数据加载</span></span><br><span class="line">batch_size=<span class="number">32</span></span><br><span class="line">data_dir = <span class="string">&quot;../data/ch04-4-9-2and4-9-3/dogvscat&quot;</span></span><br><span class="line">mean_train_list,std_train_list=getmean_str(os.path.join(data_dir, <span class="string">&#x27;train&#x27;</span>),<span class="string">&#x27;train&#x27;</span>)</span><br><span class="line">mean_testcartoon_list,std_testcartoon_list=getmean_str(os.path.join(data_dir, <span class="string">&#x27;testcartoon&#x27;</span>),<span class="string">&#x27;testcartoon&#x27;</span>)</span><br><span class="line">mean_testnormal_list,std_testnormal_list=getmean_str(os.path.join(data_dir, <span class="string">&#x27;test&#x27;</span>),<span class="string">&#x27;testnormal&#x27;</span>)</span><br><span class="line">train_iter,image_train_datasets=load_data_cartoonvsnormal(os.path.join(data_dir, <span class="string">&#x27;train&#x27;</span>),mean_train_list,std_train_list,batch_size)</span><br><span class="line">testcartoon_iter,image_testcartoon_datasets=load_data_cartoonvsnormal(os.path.join(data_dir, <span class="string">&#x27;testcartoon&#x27;</span>),mean_testcartoon_list,std_testcartoon_list,batch_size)</span><br><span class="line">testnormal_iter,image_testnormal_datasets=load_data_cartoonvsnormal(os.path.join(data_dir, <span class="string">&#x27;test&#x27;</span>),mean_testnormal_list,std_testnormal_list,batch_size)</span><br><span class="line"><span class="comment">#加载模型</span></span><br><span class="line">model_detector = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)</span><br><span class="line">Use_gpu = torch.cuda.is_available()</span><br><span class="line"><span class="keyword">if</span> Use_gpu:</span><br><span class="line">    <span class="comment">#del modelwithoutdetector</span></span><br><span class="line">    torch.cuda.empty_cache()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;clear&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> parma <span class="keyword">in</span> model_detector.parameters():</span><br><span class="line">    parma.requires_grad = <span class="literal">False</span><span class="comment">#屏蔽预训练模型的权重，只训练最后一层的全连接的权重</span></span><br><span class="line">model_detector.fc = torch.nn.Linear(<span class="number">2048</span>,<span class="number">2</span>)</span><br><span class="line">nn.init.xavier_uniform_(model_detector.fc.weight); </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> Use_gpu:</span><br><span class="line">    model_detector = model_detector.cuda()</span><br><span class="line"></span><br><span class="line"><span class="comment">#损失函数和优化器</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">myloss</span>(<span class="params">y_hat,y,beta</span>):</span><br><span class="line">    loss_f = torch.nn.CrossEntropyLoss(reduction=<span class="string">&#x27;none&#x27;</span>)</span><br><span class="line">    l=loss_f(y_hat,y)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">25</span>*torch.mul(beta,l).mean() <span class="comment">#直接使用beta计算结果 并没有改善 这可能是因为beta小于1 使loss变小 导致更新梯度以后 变化不大 所以乘以一个数 以改善这种情况</span></span><br><span class="line">     </span><br><span class="line">    </span><br><span class="line">optimizer = torch.optim.SGD(model_detector.fc.parameters(),lr =<span class="number">1e-4</span>) </span><br><span class="line"></span><br><span class="line">num_epochs = <span class="number">10</span></span><br><span class="line">train_ch4_9(model_detector, train_iter, testcartoon_iter,myloss, num_epochs,optimizer,Use_gpu,test_iter2=testnormal_iter,savename=<span class="string">&#x27;../data/ch04-4-9-2and4-9-3/dogvscatwithdetectormodel.pth&#x27;</span>,detector=covariate_shift_detector)</span><br><span class="line"><span class="comment">#清除内存</span></span><br><span class="line"><span class="keyword">del</span> model_detector</span><br><span class="line">torch.cuda.empty_cache()</span><br></pre></td></tr></table></figure>
+<h4 id="比较">比较</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">gc.collect()</span><br><span class="line">Use_gpu = torch.cuda.is_available()</span><br><span class="line"><span class="keyword">if</span> Use_gpu:</span><br><span class="line">    <span class="comment">#del modelwithoutdetector</span></span><br><span class="line">    torch.cuda.empty_cache()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;clear&#x27;</span>)</span><br><span class="line">data_dir = <span class="string">&quot;../data/ch04-4-9-2and4-9-3/dogvscat&quot;</span></span><br><span class="line">batch_size=<span class="number">32</span></span><br><span class="line">mean_testcartoon_list,std_testcartoon_list=getmean_str(os.path.join(data_dir, <span class="string">&#x27;testcartoon&#x27;</span>),<span class="string">&#x27;testcartoon&#x27;</span>)</span><br><span class="line">testcartoon_iter,image_testcartoon_datasets=load_data_cartoonvsnormal(os.path.join(data_dir, <span class="string">&#x27;testcartoon&#x27;</span>),mean_testcartoon_list,std_testcartoon_list,batch_size)</span><br><span class="line"><span class="comment">#加载模型</span></span><br><span class="line">model_detector = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)</span><br><span class="line">model_detector.fc = torch.nn.Linear(<span class="number">2048</span>,<span class="number">2</span>)</span><br><span class="line">model_detector.load_state_dict(torch.load(<span class="string">&#x27;../data/ch04-4-9-2and4-9-3/dogvscatwithdetectormodel.pth&#x27;</span>))</span><br><span class="line"><span class="comment">#加载模型\</span></span><br><span class="line">model_no_detector = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)</span><br><span class="line">model_no_detector.fc = torch.nn.Linear(<span class="number">2048</span>,<span class="number">2</span>)</span><br><span class="line">model_no_detector.load_state_dict(torch.load(<span class="string">&#x27;../data/ch04-4-9-2and4-9-3/dogvscatwithoutdetectormodel.pth&#x27;</span>))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;没使用分类器测试准确率：&#123;:.4f&#125;%,使用分类器测试准确率：&#123;:.4f&#125;%&quot;</span>.<span class="built_in">format</span>(<span class="number">100</span>*evaluate_accuracy_ch4_9(model_no_detector,testcartoon_iter,Use_gpu),<span class="number">100</span>*evaluate_accuracy_ch4_9(model_detector, testcartoon_iter,Use_gpu)))</span><br><span class="line"><span class="comment">#清除内存</span></span><br><span class="line"><span class="keyword">del</span> model_no_detector</span><br><span class="line"><span class="keyword">del</span> model_detector</span><br><span class="line">torch.cuda.empty_cache()</span><br></pre></td></tr></table></figure>
+<h3 id="结果">结果</h3>
+<p>testcartoon mean: tensor([0.4168, 0.3945, 0.3463]) std:
+tensor([0.2118, 0.2033, 0.1590])
+没使用分类器测试准确率：89.8000%,使用分类器测试准确率：92.3600%</p>
+<p>事实上如果你在优化器不用SGD而是用Adam会得到更好的结果
+而且你会发现用不用分类器结果都差不多orz</p>
+<p>在训练的时候会遇见test_acc高于train_acc的情况 这可能是因为train_acc
+是在每个batchsize之后统计的 而
+test_acc是在一个epoch后统计的（一个牵强的解释，始终不能理解为什么可以在一个epoch后就产生这么高的test_acc）</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/pytorch/" rel="tag"># pytorch</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/9f7e2fde.html" rel="prev" title="MMDetection3D 实践">
+                  <i class="fa fa-chevron-left"></i> MMDetection3D 实践
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/5122df53.html" rel="next" title="国际象棋开局和体系">
+                  国际象棋开局和体系 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mkk</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js","integrity":"sha256-e0o3JYsdjqKajf9eOe22FhioYSz9WofRY4dLKo3F6do="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"catcooc","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body>
+</html>

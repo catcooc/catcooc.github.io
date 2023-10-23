@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"catcooc.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":null,"activeClass":"disqus"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Pytorch简单代码结构展示">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenMMLab实战营第三课 图像分类代码实战与超算平台介绍">
+<meta property="og:url" content="https://catcooc.github.io/post/b64f8831.html">
+<meta property="og:site_name" content="mkk的小窝">
+<meta property="og:description" content="Pytorch简单代码结构展示">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-02-04T04:38:21.759Z">
+<meta property="article:modified_time" content="2023-05-17T09:18:09.076Z">
+<meta property="article:author" content="mkk">
+<meta property="article:tag" content="OpenMMLab - 计算机视觉">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://catcooc.github.io/post/b64f8831.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://catcooc.github.io/post/b64f8831.html","path":"post/b64f8831.html","title":"OpenMMLab实战营第三课 图像分类代码实战与超算平台介绍"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>OpenMMLab实战营第三课 图像分类代码实战与超算平台介绍 | mkk的小窝</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">mkk的小窝</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">这里存放了一些杂草</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-链接"><a href="/link/" rel="section"><i class="fas fa-link fa-fw"></i>链接</a></li><li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fas fa-heart fa-fw"></i>关于</a></li><li class="menu-item menu-item-留言板"><a href="/messageboard/" rel="section"><i class="fas fa-tags fa-fw"></i>留言板</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#pytorch%E7%AE%80%E5%8D%95%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84%E5%B1%95%E7%A4%BA"><span class="nav-number">1.</span> <span class="nav-text">Pytorch简单代码结构展示</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#openmmlab%E9%87%8C%E6%98%AF%E6%80%8E%E4%B9%88%E5%81%9A%E7%9A%84"><span class="nav-number">2.</span> <span class="nav-text">OpenMMLab里是怎么做的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98%E5%92%8C%E5%9B%9E%E7%AD%94%E6%95%B4%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">一些问题和回答整理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B6%85%E7%AE%97%E5%B9%B3%E5%8F%B0%E5%BA%94%E7%94%A8%E5%8C%97%E4%BA%AC%E8%B6%85%E7%BA%A7%E4%BA%91%E8%AE%A1%E7%AE%97%E4%B8%AD%E5%BF%83"><span class="nav-number">4.</span> <span class="nav-text">超算平台应用（北京超级云计算中心）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%90%AD%E5%BB%BA%E7%8E%AF%E5%A2%83"><span class="nav-number">4.0.1.</span> <span class="nav-text">搭建环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%92%E5%88%86%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">4.0.2.</span> <span class="nav-text">划分数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mmcls-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">4.0.3.</span> <span class="nav-text">MMCls 配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E4%BA%A4%E8%AE%A1%E7%AE%97"><span class="nav-number">4.0.4.</span> <span class="nav-text">提交计算</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="mkk"
+      src="/img/favicon.png">
+  <p class="site-author-name" itemprop="name">mkk</p>
+  <div class="site-description" itemprop="description">我在这里放了一些东西</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/catcooc" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;catcooc" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://catcooc.github.io/post/b64f8831.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/favicon.png">
+      <meta itemprop="name" content="mkk">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="mkk的小窝">
+      <meta itemprop="description" content="我在这里放了一些东西">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="OpenMMLab实战营第三课 图像分类代码实战与超算平台介绍 | mkk的小窝">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          OpenMMLab实战营第三课 图像分类代码实战与超算平台介绍
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-02-04 12:38:21" itemprop="dateCreated datePublished" datetime="2023-02-04T12:38:21+08:00">2023-02-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-05-17 17:18:09" itemprop="dateModified" datetime="2023-05-17T17:18:09+08:00">2023-05-17</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/post/b64f8831.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="post/b64f8831.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="pytorch简单代码结构展示">Pytorch简单代码结构展示</h1>
+<span id="more"></span>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># https://pytorch.org/tutorials/beginner/basics/quickstart_tutorial.html</span></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> nn</span><br><span class="line"><span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> DataLoader</span><br><span class="line"><span class="keyword">from</span> torchvision <span class="keyword">import</span> datasets</span><br><span class="line"><span class="keyword">from</span> torchvision.transforms <span class="keyword">import</span> ToTensor</span><br><span class="line"></span><br><span class="line"><span class="comment"># Download training data from open datasets.</span></span><br><span class="line">training_data = datasets.FashionMNIST(</span><br><span class="line">    root=<span class="string">&quot;data&quot;</span>,</span><br><span class="line">    train=<span class="literal">True</span>,</span><br><span class="line">    download=<span class="literal">True</span>,</span><br><span class="line">    transform=ToTensor(),</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Download test data from open datasets.</span></span><br><span class="line">test_data = datasets.FashionMNIST(</span><br><span class="line">    root=<span class="string">&quot;data&quot;</span>,</span><br><span class="line">    train=<span class="literal">False</span>,</span><br><span class="line">    download=<span class="literal">True</span>,</span><br><span class="line">    transform=ToTensor(),</span><br><span class="line">)</span><br><span class="line">batch_size = <span class="number">64</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Create data loaders.</span></span><br><span class="line">train_dataloader = DataLoader(training_data, batch_size=batch_size)</span><br><span class="line">test_dataloader = DataLoader(test_data, batch_size=batch_size)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> X, y <span class="keyword">in</span> test_dataloader:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Shape of X [N, C, H, W]: <span class="subst">&#123;X.shape&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Shape of y: <span class="subst">&#123;y.shape&#125;</span> <span class="subst">&#123;y.dtype&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">break</span></span><br><span class="line">    </span><br><span class="line"><span class="comment"># Get cpu or gpu device for training.</span></span><br><span class="line">device = <span class="string">&quot;cuda&quot;</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">&quot;mps&quot;</span> <span class="keyword">if</span> torch.backends.mps.is_available() <span class="keyword">else</span> <span class="string">&quot;cpu&quot;</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Using <span class="subst">&#123;device&#125;</span> device&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Define model</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">NeuralNetwork</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.flatten = nn.Flatten()</span><br><span class="line">        self.linear_relu_stack = nn.Sequential(</span><br><span class="line">            nn.Linear(<span class="number">28</span>*<span class="number">28</span>, <span class="number">512</span>),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.Linear(<span class="number">512</span>, <span class="number">512</span>),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.Linear(<span class="number">512</span>, <span class="number">10</span>)</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        x = self.flatten(x)</span><br><span class="line">        logits = self.linear_relu_stack(x)</span><br><span class="line">        <span class="keyword">return</span> logits</span><br><span class="line"></span><br><span class="line">model = NeuralNetwork().to(device)</span><br><span class="line"><span class="built_in">print</span>(model)</span><br><span class="line"><span class="comment">## Define loss funtion and Optimizer</span></span><br><span class="line">loss_fn = nn.CrossEntropyLoss()</span><br><span class="line">optimizer = torch.optim.SGD(model.parameters(), lr=<span class="number">1e-3</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">train</span>(<span class="params">dataloader, model, loss_fn, optimizer</span>):</span><br><span class="line">    size = <span class="built_in">len</span>(dataloader.dataset)</span><br><span class="line">    model.train()</span><br><span class="line">    <span class="keyword">for</span> batch, (X, y) <span class="keyword">in</span> <span class="built_in">enumerate</span>(dataloader):</span><br><span class="line">        X, y = X.to(device), y.to(device)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Compute prediction error</span></span><br><span class="line">        pred = model(X)</span><br><span class="line">        loss = loss_fn(pred, y)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Backpropagation</span></span><br><span class="line">        optimizer.zero_grad()</span><br><span class="line">        loss.backward()</span><br><span class="line">        optimizer.step()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> batch % <span class="number">100</span> == <span class="number">0</span>:</span><br><span class="line">            loss, current = loss.item(), batch * <span class="built_in">len</span>(X)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;loss: <span class="subst">&#123;loss:&gt;7f&#125;</span>  [<span class="subst">&#123;current:&gt;5d&#125;</span>/<span class="subst">&#123;size:&gt;5d&#125;</span>]&quot;</span>)</span><br><span class="line">            </span><br><span class="line">            </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">test</span>(<span class="params">dataloader, model, loss_fn</span>):</span><br><span class="line">    size = <span class="built_in">len</span>(dataloader.dataset)</span><br><span class="line">    num_batches = <span class="built_in">len</span>(dataloader)</span><br><span class="line">    model.<span class="built_in">eval</span>()</span><br><span class="line">    test_loss, correct = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        <span class="keyword">for</span> X, y <span class="keyword">in</span> dataloader:</span><br><span class="line">            X, y = X.to(device), y.to(device)</span><br><span class="line">            pred = model(X)</span><br><span class="line">            test_loss += loss_fn(pred, y).item()</span><br><span class="line">            correct += (pred.argmax(<span class="number">1</span>) == y).<span class="built_in">type</span>(torch.<span class="built_in">float</span>).<span class="built_in">sum</span>().item()</span><br><span class="line">    test_loss /= num_batches</span><br><span class="line">    correct /= size</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Test Error: \n Accuracy: <span class="subst">&#123;(<span class="number">100</span>*correct):&gt;<span class="number">0.1</span>f&#125;</span>%, Avg loss: <span class="subst">&#123;test_loss:&gt;8f&#125;</span> \n&quot;</span>)</span><br><span class="line">    </span><br><span class="line">epochs = <span class="number">5</span></span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> <span class="built_in">range</span>(epochs):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Epoch <span class="subst">&#123;t+<span class="number">1</span>&#125;</span>\n-------------------------------&quot;</span>)</span><br><span class="line">    train(train_dataloader, model, loss_fn, optimizer)</span><br><span class="line">    test(test_dataloader, model, loss_fn)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Done!&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Saving Models</span></span><br><span class="line">torch.save(model.state_dict(), <span class="string">&quot;model.pth&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Saved PyTorch Model State to model.pth&quot;</span>)</span><br><span class="line"><span class="comment"># Deployment</span></span><br><span class="line"><span class="comment"># loading Models</span></span><br><span class="line">model = NeuralNetwork()</span><br><span class="line">model.load_state_dict(torch.load(<span class="string">&quot;model.pth&quot;</span>))</span><br><span class="line"><span class="comment">#Predict new images</span></span><br><span class="line">classes = [</span><br><span class="line">    <span class="string">&quot;T-shirt/top&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Trouser&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Pullover&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Dress&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Coat&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Sandal&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Shirt&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Sneaker&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Bag&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Ankle boot&quot;</span>,</span><br><span class="line">]</span><br><span class="line"><span class="comment">#没有归一化</span></span><br><span class="line">model.<span class="built_in">eval</span>()</span><br><span class="line">x, y = test_data[<span class="number">0</span>][<span class="number">0</span>], test_data[<span class="number">0</span>][<span class="number">1</span>]</span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    pred = model(x)</span><br><span class="line">    predicted, actual = classes[pred[<span class="number">0</span>].argmax(<span class="number">0</span>)], classes[y]</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;Predicted: &quot;<span class="subst">&#123;predicted&#125;</span>&quot;, Actual: &quot;<span class="subst">&#123;actual&#125;</span>&quot;&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h1 id="openmmlab里是怎么做的">OpenMMLab里是怎么做的</h1>
+<p>OpenMMLab 项目中的重要概念--配置文件 比pytorch更简单的的方式
+通过它OpenMMLab可以还原回pytorch代码</p>
+<p>深度学习模型的训练涉及几个方面:</p>
+<ul>
+<li>模型结构模型 有几层、每层多少通道数等等</li>
+<li>数据集
+用什么数据训练模型:数据集划分、数据文件路径、数据增强策略等等</li>
+<li>训练策略 梯度下降算法、学习率参数、batch
+size训练总轮次、学习率变化策略等等</li>
+<li>运行时 GPU、分布式环境配置等等</li>
+<li>一些辅助功能 如打印日志、定时保存checkpoint等等</li>
+</ul>
+<h1 id="一些问题和回答整理">一些问题和回答整理</h1>
+<p>只记录了一些我感兴趣的问题和回答（并不是原话经过整理）</p>
+<p><strong>问题</strong>： 输入图片的尺寸可以不固定吗？</p>
+<p><strong>回答</strong>： 对于早期的存在全链接层的卷积神经网络必须
+输入图像是固定的，而后续一些下经网络（如ResNet）用了全局平均池化
+，代替了全连接层所以不限制图像尺寸。</p>
+<p><strong>问题</strong>：
+神经网络也需要像人一样使用多种感官感知吗？</p>
+<p><strong>回答</strong>： 为了更好感知信息神经网络确实需要这样的策略
+如多模态学习。</p>
+<p><strong>问题</strong>： 出现分类错误 如何修改错误？</p>
+<p><strong>回答</strong>： 可以通过可解释学习 来了解
+程序哪里出了错。</p>
+<h1
+id="超算平台应用北京超级云计算中心">超算平台应用（北京超级云计算中心）</h1>
+<p>登录官网下载客户端</p>
+<p>利用云桌面平台</p>
+<p>先用ssh 选择合适的分区（N30分区）</p>
+<p>界面目录 cd run 分配了300G内存</p>
+<p>查看模块</p>
+<p><code>module avail</code></p>
+<h3 id="搭建环境">搭建环境</h3>
+<p>创建环境</p>
+<p><code>module load anaconda/2021.05</code></p>
+<p><code>conda create --name mmclassification python=3.8</code></p>
+<p>激活环境</p>
+<p><code>source activate mmclassification</code></p>
+<p>加载cuda/11.1</p>
+<p><code>module load cuda/11.1</code></p>
+<p>安装pytorch 通过pip安装CUDA不能低于 11.1 不推荐用conda装</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install torch==1.10.0+cu111 torchvision==0.11.0+cu111 torchaudio==0.10.0 -f https://download.pytorch.org/whl/torch_stable.html</span><br></pre></td></tr></table></figure>
+<p>安装 mmcv-full 模块，mmcv-full 模块安装时候需要注意 torch 和 cuda
+版本。参考<a
+target="_blank" rel="noopener" href="https://mmcv.readthedocs.io/en/latest/get_started/installation.html">这里</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install mmcv-full==1.7.0 -f</span><br><span class="line">https://download.openmmlab.com/mmcv/dist/cu111/torch1.10/index.html</span><br></pre></td></tr></table></figure>
+<p>安装 openmmlab/mmclassification
+模块，建议通过下载编译的方式进行安装；安装该模块需要 gcc ≥ 5，使用
+module 加载一个 gcc ，例如 module load gcc/7.3</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">加载 gcc/7.3 模块</span></span><br><span class="line"> module load gcc/7.3</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"> # </span><span class="language-bash">git 下载 mmclassification 代码</span></span><br><span class="line"> git clone https://github.com/openmmlab/mmclassification.git</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"> # </span><span class="language-bash">编译安装</span></span><br><span class="line"> cd mmclassification</span><br><span class="line"> pip install -e .</span><br></pre></td></tr></table></figure>
+<p>总结环境信息，可以使用 module list
+查看当前环境中加载的依赖模块，如下：</p>
+<p><code>module list</code></p>
+<p>准备 shell 脚本，将环境信息预先保存在脚本中。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">加载模块</span></span><br><span class="line">module load anaconda/2021.05</span><br><span class="line">module load cuda/11.1</span><br><span class="line">module load gcc/7.3</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">激活环境</span></span><br><span class="line">source activate mmclassification</span><br></pre></td></tr></table></figure>
+<p>使用快传传输本地数据集到超算 创建data目录存放</p>
+<h3 id="划分数据集">划分数据集</h3>
+<p>自己写的脚本文件</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> shutil</span><br><span class="line"> </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mymkdir</span>(<span class="params">file</span>):</span><br><span class="line">      <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(file):</span><br><span class="line">            os.mkdir(file)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">getData</span>(<span class="params">dirPath</span>):</span><br><span class="line">    subDirs=os.listdir(dirPath)</span><br><span class="line">    mymkdir(os.path.join(dirPath,<span class="string">&#x27;data&#x27;</span>))</span><br><span class="line">    destdir=os.path.join(dirPath,<span class="string">&#x27;data&#x27;</span>,<span class="string">&#x27;val&#x27;</span>)</span><br><span class="line">    mymkdir(destdir)</span><br><span class="line">    destdir2=os.path.join(dirPath,<span class="string">&#x27;data&#x27;</span>,<span class="string">&#x27;train&#x27;</span>)</span><br><span class="line">    mymkdir(destdir2)</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">dir</span> <span class="keyword">in</span> subDirs:</span><br><span class="line">        tempDir=os.path.join(dirPath,<span class="built_in">dir</span>)</span><br><span class="line">        destdirnow=os.path.join(destdir,<span class="built_in">dir</span>)</span><br><span class="line">        destdirnow2=os.path.join(destdir2,<span class="built_in">dir</span>)</span><br><span class="line">        mymkdir(destdirnow)</span><br><span class="line">        mymkdir(destdirnow2)</span><br><span class="line">        fs=os.listdir(tempDir)</span><br><span class="line">        random.shuffle(fs)</span><br><span class="line">        le=<span class="built_in">int</span>(<span class="built_in">len</span>(fs)*<span class="number">0.8</span>)  <span class="comment">#这个可以修改划分比例</span></span><br><span class="line">        <span class="keyword">for</span> f <span class="keyword">in</span> fs[le:]:</span><br><span class="line">            shutil.move(os.path.join(tempDir,f), destdirnow)</span><br><span class="line">        <span class="keyword">for</span> f <span class="keyword">in</span> fs[:le]:</span><br><span class="line">            shutil.move(os.path.join(tempDir,f), destdirnow2)</span><br><span class="line"> </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#print(os.path.join(os.getcwd(),&#x27;flower_dataset&#x27;))</span></span><br><span class="line">getData(os.path.join(os.getcwd(),<span class="string">&#x27;flower_dataset&#x27;</span>))</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="mmcls-配置文件">MMCls 配置文件</h3>
+<p><code>mkdir configs/resnet18</code></p>
+<p><code>cp ~/run/opnemmlab/resnet18_b32_flower.py ./configs/resnet18/</code></p>
+<p>按要求修改配置文件</p>
+<h3 id="提交计算">提交计算</h3>
+<p>准备作业脚本</p>
+<p>取消计算</p>
+<p><code>scancel 279704 # 279704 为作业ID</code></p>
+<p>查看GPU利用率</p>
+<p>在提交作业之后，使用 parajobs 或 squeue 查看作业的第八列
+NODELIST（REASON）对于运行作业（R状态）显示作业使用的节点列表</p>
+<p><code>squeue</code></p>
+<p>查看到使用的节点列表之后，使用 ssh [节点] 进入GPU环境，执行
+nvidia-smi 可查看 GPU 利用率。</p>
+<p><code>ssh g0004 #g0004节点</code></p>
+<p><code>nvidia-smi</code></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/OpenMMLab-%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" rel="tag"># OpenMMLab - 计算机视觉</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/a3e368ef.html" rel="prev" title="OpenMMLab实战营第二课 计算机视觉之图像分类算法基础">
+                  <i class="fa fa-chevron-left"></i> OpenMMLab实战营第二课 计算机视觉之图像分类算法基础
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/b64f8832.html" rel="next" title="OpenMMLab实战营第四课 目标检测算法基础">
+                  OpenMMLab实战营第四课 目标检测算法基础 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mkk</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js","integrity":"sha256-e0o3JYsdjqKajf9eOe22FhioYSz9WofRY4dLKo3F6do="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"catcooc","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body>
+</html>

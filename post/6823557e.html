@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"catcooc.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":null,"activeClass":"disqus"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="什么是语义分割 任务： 将图像按照物体的类别分割成不同的区域 等价于： 对每个像素进行分类">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenMMLab实战营第六课 语义分割算法基础">
+<meta property="og:url" content="https://catcooc.github.io/post/6823557e.html">
+<meta property="og:site_name" content="mkk的小窝">
+<meta property="og:description" content="什么是语义分割 任务： 将图像按照物体的类别分割成不同的区域 等价于： 对每个像素进行分类">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/%E8%AF%AD%E4%B9%89%E5%88%86%E5%89%B2%E7%AE%97%E6%B3%95%E6%80%BB%E7%BB%93.png">
+<meta property="article:published_time" content="2023-02-10T12:39:01.000Z">
+<meta property="article:modified_time" content="2023-05-17T09:17:59.985Z">
+<meta property="article:author" content="mkk">
+<meta property="article:tag" content="OpenMMLab">
+<meta property="article:tag" content="计算机视觉">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/%E8%AF%AD%E4%B9%89%E5%88%86%E5%89%B2%E7%AE%97%E6%B3%95%E6%80%BB%E7%BB%93.png">
+
+
+<link rel="canonical" href="https://catcooc.github.io/post/6823557e.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://catcooc.github.io/post/6823557e.html","path":"post/6823557e.html","title":"OpenMMLab实战营第六课 语义分割算法基础"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>OpenMMLab实战营第六课 语义分割算法基础 | mkk的小窝</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">mkk的小窝</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">这里存放了一些杂草</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-链接"><a href="/link/" rel="section"><i class="fas fa-link fa-fw"></i>链接</a></li><li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fas fa-heart fa-fw"></i>关于</a></li><li class="menu-item menu-item-留言板"><a href="/messageboard/" rel="section"><i class="fas fa-tags fa-fw"></i>留言板</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%AF%AD%E4%B9%89%E5%88%86%E5%89%B2"><span class="nav-number">1.</span> <span class="nav-text">什么是语义分割</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E4%BB%A5%E5%89%8D%E7%9A%84%E6%80%9D%E8%B7%AF"><span class="nav-number">2.</span> <span class="nav-text">一些以前的思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%B0%E5%9C%A8%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">现在的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E5%8D%B7%E7%A7%AF%E7%BD%91%E7%BB%9C-fully-convolutional-network-2015"><span class="nav-number">3.1.</span> <span class="nav-text">全卷积网络 Fully
+Convolutional Network 2015</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#unet-2015"><span class="nav-number">3.2.</span> <span class="nav-text">UNet 2015</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pspnet-2016"><span class="nav-number">3.3.</span> <span class="nav-text">PSPNet 2016</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%AD%E4%B9%89%E5%88%86%E5%89%B2%E7%AE%97%E6%B3%95%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">语义分割算法总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%AD%E4%B9%89%E5%88%86%E5%89%B2%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AF%84%E4%BC%B0"><span class="nav-number">5.</span> <span class="nav-text">语义分割模型的评估</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%B8%8E%E5%9B%9E%E7%AD%94"><span class="nav-number">6.</span> <span class="nav-text">问题与回答</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="mkk"
+      src="/img/favicon.png">
+  <p class="site-author-name" itemprop="name">mkk</p>
+  <div class="site-description" itemprop="description">我在这里放了一些东西</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/catcooc" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;catcooc" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://catcooc.github.io/post/6823557e.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/favicon.png">
+      <meta itemprop="name" content="mkk">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="mkk的小窝">
+      <meta itemprop="description" content="我在这里放了一些东西">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="OpenMMLab实战营第六课 语义分割算法基础 | mkk的小窝">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          OpenMMLab实战营第六课 语义分割算法基础
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-02-10 20:39:01" itemprop="dateCreated datePublished" datetime="2023-02-10T20:39:01+08:00">2023-02-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-05-17 17:17:59" itemprop="dateModified" datetime="2023-05-17T17:17:59+08:00">2023-05-17</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/post/6823557e.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="post/6823557e.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="什么是语义分割">什么是语义分割</h2>
+<p>任务： 将图像按照物体的类别分割成不同的区域<br />
+等价于： 对每个像素进行分类</p>
+<span id="more"></span>
+<p>应用：</p>
+<ul>
+<li><p>无人驾驶汽车
+自动驾驶车辆，会将行人，其他车辆，行车道，人行道、交通标志、房屋、草地与树木等等按照类别在图像中分割出来，从而辅助车辆对道路的情况进行识别与认知。</p></li>
+<li><p>人像分割 实时替换视频的背景
+在智慧互娱和智能会议场景中，可以通过这种方法增加交互的多样性</p></li>
+<li><p>智能遥感
+通过智能遥感能够监测不同季节地表水域的变化，从而辅助农业生产，以及旱灾洪灾的预测等等。</p>
+<table>
+<colgroup>
+<col style="width: 39%" />
+<col style="width: 29%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>语义分割</th>
+<th>实例分割</th>
+<th>全景分割</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>仅考虑像素的类别不分割同一类的不同实体</td>
+<td>分割不同的实体 仅考虑前景物体</td>
+<td>背景仅考虑类别前景需要区分实体</td>
+</tr>
+</tbody>
+</table>
+<h2 id="一些以前的思路">一些以前的思路</h2>
+<ul>
+<li><p>按颜色分割</p>
+<ul>
+<li>先验知识 物体内部颜色相近，物体交界颜色变化</li>
+<li>问题</li>
+<li>先验知识不完全准确：不同物体颜色可能相近，物体内也会包含多种颜色</li>
+</ul></li>
+<li><p>逐像素分类 搞很多滑窗</p>
+<ul>
+<li><p>优势：可以充分利用已有的图像分类模型</p></li>
+<li><p>问题：效率低下，重叠区域重复计算卷积</p></li>
+</ul></li>
+</ul></li>
+</ul>
+<h2 id="现在的方法">现在的方法</h2>
+<h3 id="全卷积网络-fully-convolutional-network-2015">全卷积网络 Fully
+Convolutional Network 2015</h3>
+<p>复用卷积计算 直接对全图进行卷积 得到特征图</p>
+<p>全连接层的卷积化(不在固定特征图大小 原来全连接层多少个神经元
+变成多少个卷积核)</p>
+<p>预测图的升采样</p>
+<p>问题：</p>
+<p>图像分类模型使用降采样层（步长卷积或池化）获得高层次特征，导致全卷积网络输出尺寸小于原图，而分割要求同尺寸输出</p>
+<p>解决方法：<br />
+对预测的分割图升采样，恢复原图分辨率，升采样方案：<br />
+1. 双线性插值 Bilinear Interpolation 等效于把特征图零插值
+在用一个固定参数卷积核 作用它</p>
+<ol start="2" type="1">
+<li>转置卷积Transposed Convolution：可学习的升采样层</li>
+</ol>
+<h3 id="unet-2015">UNet 2015</h3>
+<p>基于多层级特征的上采样<br />
+问题：基于顶层特征预测，再升采样32 倍得到的预测图较为粗糙。<br />
+分析：高层特征经过多次降采样，细节丢失严重。<br />
+解决思路：结合低层次和高层次特征图。<br />
+解决方案FCN：<br />
+基于低层次和高层次特征图分别产生类别预测，升采样到原图大小，再平均得到最终结果</p>
+<h3 id="pspnet-2016">PSPNet 2016</h3>
+<p>图像周围的内容（也称上下文）可以帮助我们做出更准确的判断。<br />
+方案：增加感受野更大的网络分支，将上下文信息导入局部预测中<br />
+PSPNet 2016<br />
+(a) 对特征图进行不同尺度的池化，得到不同尺度的上下文特征<br />
+(b) 上下文特征经过通道压缩和空间上采样之后拼接回原特征图→
+同时包含局部和上下文特征<br />
+(c) 基于融合的特征产生预测图<br />
+### DeepLab 系列<br />
+DeepLab 是语义分割的又一系列工作，其主要贡献为：<br />
+• 使用空洞卷积解决网络中的下采样问题（减少下采样保留空间分辨率）</p>
+<ul>
+<li><p>图像分类模型中的下采样层使输出尺寸变小</p>
+<ul>
+<li>如果将池化层和卷积中的步长去掉：
+<ul>
+<li>可以减少下采样的次数；</li>
+<li>特征图就会变大，需要对应增大卷积核，以维持相同的感受野，但会增加大量参数</li>
+<li>使用空洞卷积（Dilated Convolution/Atrous
+Convolution），在不增加参数的情况下增大感受野</li>
+</ul></li>
+</ul></li>
+<li><p>使用条件随机场CRF 作为后处理手段，精细化分割图</p>
+<ul>
+<li><p>条件随机场Conditional Random Field, CRF</p>
+<p>模型直接输出的分割图较为粗糙，尤其在物体边界处不能产生很好的分割结果。<br />
+DeepLab v1&amp;v2 使用条件随机场(CRF)
+作为后处理手段，结合原图颜色信息和神经网络预测的类<br />
+别得到精细化分割结果。</p>
+<p>CRF 是一种概率模型。DeepLab 使用CRF
+对分割结果进行建模，用能量函数用来表示分割结果优劣，通过最小化能量函数获得更好的分割结果。</p>
+<p><span class="math display">\[E(\boldsymbol{x})=\sum_i
+\theta_i\left(x_i\right)+\sum_{i, j} \theta_{i j}\left(x_i,
+x_j\right)\]</span></p>
+<p><span class="math display">\[\theta_i\left(x_i\right)=-log
+P\left(x_i\right)\]</span></p>
+<p><span class="math inline">\(x_i\)</span>,<span
+class="math inline">\(x_j\)</span>
+特定像素的预测结果（向量化后只有1维坐标）</p>
+<p><strong>x</strong> 全部像素的预测结果</p>
+<p><span class="math inline">\(\theta_i(x_i)\)</span>
+单个预测对能量函数的贡献</p>
+<p><span class="math inline">\(\theta_{i,j}(x_i,x_j)\)</span>
+一对预测对能量函数的贡献</p></li>
+</ul></li>
+<li><p>使用多尺度的空洞卷积（ASPP 模块）捕捉上下文信息<br />
+DeepLab v1 发表于2014 年，后于2016、2017、2018 年提出v2、v3、v3+
+版本。</p></li>
+</ul>
+<h2 id="语义分割算法总结">语义分割算法总结</h2>
+<center>
+<img src="/themes/butterfly/source/img/loading.gif" data-original="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/%E8%AF%AD%E4%B9%89%E5%88%86%E5%89%B2%E7%AE%97%E6%B3%95%E6%80%BB%E7%BB%93.png"/>
+</center>
+<center>
+<b><font size ='2'>来自同济自豪兄OpenMMlab AI 实训营课件</font></b>
+</center>
+<p></font></p>
+<h2 id="语义分割模型的评估">语义分割模型的评估</h2>
+<p>基于交并集给出评估指标</p>
+<p><img
+src="https://www.jeremyjordan.me/content/images/2018/05/target_prediction.png" /></p>
+<p><img
+src="https://www.jeremyjordan.me/content/images/2018/05/intersection_union.png" /></p>
+<p>图片出处
+https://www.jeremyjordan.me/evaluating-image-segmentation-models/</p>
+<p>Accuracy =GT∩Pred/GT</p>
+<p>IoU =GT∩Pred/GT∪Pred</p>
+<p>Dice =2 × GT∩Pred/（GT+Pred）</p>
+<p>对每类计算指标再按类别平均</p>
+<h2 id="问题与回答">问题与回答</h2>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/OpenMMLab/" rel="tag"># OpenMMLab</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" rel="tag"># 计算机视觉</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/1554c19c.html" rel="prev" title="openmmlab实战营第五课 MMDetection 代码教学">
+                  <i class="fa fa-chevron-left"></i> openmmlab实战营第五课 MMDetection 代码教学
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/3f37b543.html" rel="next" title="ChatGPT (可能)是怎麼煉成的 - GPT 社會化的過程">
+                  ChatGPT (可能)是怎麼煉成的 - GPT 社會化的過程 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mkk</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js","integrity":"sha256-e0o3JYsdjqKajf9eOe22FhioYSz9WofRY4dLKo3F6do="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"catcooc","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body>
+</html>

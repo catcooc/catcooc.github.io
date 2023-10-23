@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"catcooc.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":null,"activeClass":"disqus"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="有点事 先简单写一下 晚上完善">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenMMLab实战营第二课 计算机视觉之图像分类算法基础">
+<meta property="og:url" content="https://catcooc.github.io/post/a3e368ef.html">
+<meta property="og:site_name" content="mkk的小窝">
+<meta property="og:description" content="有点事 先简单写一下 晚上完善">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/%E5%9F%BA%E4%BA%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E8%AE%AD%E7%BB%83%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B.png">
+<meta property="article:published_time" content="2023-02-03T04:49:54.000Z">
+<meta property="article:modified_time" content="2023-05-17T09:17:47.362Z">
+<meta property="article:author" content="mkk">
+<meta property="article:tag" content="OpenMMLab">
+<meta property="article:tag" content="计算机视觉">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/%E5%9F%BA%E4%BA%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E8%AE%AD%E7%BB%83%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B.png">
+
+
+<link rel="canonical" href="https://catcooc.github.io/post/a3e368ef.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://catcooc.github.io/post/a3e368ef.html","path":"post/a3e368ef.html","title":"OpenMMLab实战营第二课 计算机视觉之图像分类算法基础"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>OpenMMLab实战营第二课 计算机视觉之图像分类算法基础 | mkk的小窝</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">mkk的小窝</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">这里存放了一些杂草</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-链接"><a href="/link/" rel="section"><i class="fas fa-link fa-fw"></i>链接</a></li><li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fas fa-heart fa-fw"></i>关于</a></li><li class="menu-item menu-item-留言板"><a href="/messageboard/" rel="section"><i class="fas fa-tags fa-fw"></i>留言板</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%91%E5%B1%95"><span class="nav-number">1.</span> <span class="nav-text">卷积神经网络发展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%BB%E9%87%8F%E5%8C%96%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">2.</span> <span class="nav-text">轻量化卷积神经网络</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E5%AD%A6%E4%B9%A0"><span class="nav-number">3.</span> <span class="nav-text">模型学习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0"><span class="nav-number">3.1.</span> <span class="nav-text">监督学习</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E7%8E%87%E5%AF%B9%E8%AE%AD%E7%BB%83%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">3.2.</span> <span class="nav-text">学习率对训练的影响</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E9%87%8Fmomentum-sgd"><span class="nav-number">3.3.</span> <span class="nav-text">动量Momentum SGD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E9%80%82%E5%BA%94%E6%A2%AF%E5%BA%A6%E7%AE%97%E6%B3%95"><span class="nav-number">3.4.</span> <span class="nav-text">自适应梯度算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E5%88%99%E5%8C%96%E4%B8%8E%E6%9D%83%E9%87%8D%E8%A1%B0%E5%87%8Fweight-decay"><span class="nav-number">3.5.</span> <span class="nav-text">正则化与权重衰减Weight Decay</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BAdata-augmentation"><span class="nav-number">3.6.</span> <span class="nav-text">数据增强Data Augmentation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%84%E5%90%88%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BAautoaugment-randaugment"><span class="nav-number">3.7.</span> <span class="nav-text">组合数据增强AutoAugment
+&amp; RandAugment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E7%AD%BE%E5%B9%B3%E6%BB%91label-smoothing"><span class="nav-number">3.8.</span> <span class="nav-text">标签平滑Label Smoothing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A2%E5%BC%83%E5%B1%82dropout"><span class="nav-number">3.9.</span> <span class="nav-text">丢弃层Dropout</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0"><span class="nav-number">3.10.</span> <span class="nav-text">自监督学习</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="mkk"
+      src="/img/favicon.png">
+  <p class="site-author-name" itemprop="name">mkk</p>
+  <div class="site-description" itemprop="description">我在这里放了一些东西</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/catcooc" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;catcooc" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://catcooc.github.io/post/a3e368ef.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/favicon.png">
+      <meta itemprop="name" content="mkk">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="mkk的小窝">
+      <meta itemprop="description" content="我在这里放了一些东西">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="OpenMMLab实战营第二课 计算机视觉之图像分类算法基础 | mkk的小窝">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          OpenMMLab实战营第二课 计算机视觉之图像分类算法基础
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-02-03 12:49:54" itemprop="dateCreated datePublished" datetime="2023-02-03T12:49:54+08:00">2023-02-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-05-17 17:17:47" itemprop="dateModified" datetime="2023-05-17T17:17:47+08:00">2023-05-17</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/post/a3e368ef.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="post/a3e368ef.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>有点事 先简单写一下 晚上完善</p>
+<span id="more"></span>
+<p>传统方法： 设计图像特征（1990—2000)<br />
+人工设置特征 保留图像这种特征 以简化数据表达 从而可以计算分类 。<br />
+特征工程的天花板<br />
+在ImageNet 图像识别挑战赛里，2010 和2011
+年的冠军队伍都使用了经典的视觉方法，基于手工设计的特征+
+机器学习算法实现图像分类，Top-5 错误率在25% 上下。<br />
+传统的特征工程由于人工设置受限存在性能瓶颈。<br />
+于是有人提出了 利用机器直接学习提取用于分类的特征的方法<br />
+卷积实现一步特征提取👉 卷积神经网络</p>
+<ol type="1">
+<li><p>特征和图像一样具有二维空间结构</p></li>
+<li><p>后层特征为空间邻域内前层特征的加权求和<br />
+多头注意力实现一步特征提取👉 Transformer<br />
+AlexNet 的诞生&amp; 深度学习时代的开始<br />
+在2012
+年的竞赛中，来自多伦多大学的团队首次使用深度学习方法，一举将错误率降低至15.3%
+，而传统视觉算法的性能已经达到瓶颈，2015
+年，卷积网络的性能超越人类。</p></li>
+<li><p>模型设计：设计适合图像的<span
+class="math inline">\(𝐹_Θ(𝑋)\)</span>模型 例子如下<br />
+• 卷积神经网络<br />
+• 轻量化卷积神经网络<br />
+• 神经结构搜索<br />
+• Transformer</p></li>
+<li><p>模型学习：求解一组好的参数Θ<br />
+• 监督学习：基于标注数据学习<br />
+• 损失函数<br />
+• 随机梯度下降算法<br />
+• 视觉模型常用训练技巧<br />
+• 自监督学习：基于无标注的数据学习</p></li>
+</ol>
+<h2 id="卷积神经网络发展">卷积神经网络发展</h2>
+<p>AlexNet (2012)<br />
+Going Deeper (2012~2014)<br />
+VGG (2014)<br />
+残差网络ResNet (2015)<br />
+神经结构搜索Neural Architecture Search (2016+)<br />
+Vision Transformers (2020+)<br />
+ConvNeXt (2022)</p>
+<h2 id="轻量化卷积神经网络">轻量化卷积神经网络</h2>
+<p>GoogLeNet 使用不同大小的卷积核
+基本思路：并不是所有特征都需要同样大的感受野，在同一层中混合使用不同尺寸的特征可以减少参数量<br />
+ResNet 使用1×1卷积压缩通道数<br />
+可分离卷积 将常规卷积分解为逐层卷积和逐点卷积，降低参数量和计算量
+MobileNet V1/V2/V3 (2017~2019)<br />
+ResNeXt 将ResNet 的bottleneck block 中3×3
+的卷积改为分组卷积，降低模型计算量<br />
+可分离卷积为分组卷积的特殊情形，组数=通道数</p>
+<h2 id="模型学习">模型学习</h2>
+<center>
+<img src="/themes/butterfly/source/img/loading.gif" data-original="https://cdn.jsdelivr.net/gh/catcooc/catcoocblogimg@main/img/%E5%9F%BA%E4%BA%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E8%AE%AD%E7%BB%83%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B.png"/>
+</center>
+<center>
+<b><font size ='2'>模型训练流程图</font></b>
+</center>
+<p></font></p>
+<p>目标：确定模型<span class="math inline">\(𝐹_\Theta\)</span>
+的具体形式后，找寻最优参数<span
+class="math inline">\(\Theta^\ast\)</span> ，使得模型<span
+class="math inline">\(𝐹_{\Theta^\ast}(x)\)</span>
+给出准确的分类结果<span class="math inline">\(𝑃(𝑦|x)\)</span></p>
+<h3 id="监督学习">监督学习</h3>
+<pre class="mermaid">
+
+graph LR;
+0[真值y]---1[损失L]
+A[图像]---B[模型$F_θ$]
+B---C[概率P]
+C---1
+
+</pre>
+<ol type="1">
+<li><p>标注一个数据集<span
+class="math inline">\(\mathcal{D}=\left\{\left(X_i,
+y_i\right)\right\}_{i=1}^N\)</span></p></li>
+<li><p>定义损失函数<span class="math inline">\(L:[0,1]^K \times
+\mathbb{N} \rightarrow
+\mathbb{R}\)</span>，衡量单个预测结果的"好/坏"</p></li>
+<li><p>解一个最优化问题，寻找使得总损失最小的参数<span
+class="math inline">\(\Theta^\ast\)</span><br />
+<span class="math display">\[
+\Theta^*=\underset{\Theta}{\arg \min } \sum_{i=1}^N
+L\left(F_{\Theta}\left(X_i\right), y_i\right)
+\longrightarrow梯度下降法+针对视觉问题的技巧和策略
+\]</span></p></li>
+</ol>
+<p>优化参数用 随机梯度下降算法（SGD）</p>
+<ol type="1">
+<li><p>随机初始化参数<span class="math inline">\(Θ^{( 0)}\)</span></p>
+<ul>
+<li>按照均与分布 或者高斯分布 <span class="math inline">\(W_{ij},b_i
+\sim U \left(-a,a \right)\)</span> or <span class="math inline">\(W_{i
+j}, b_i \sim \mathcal{N}\left(0, \sigma^2\right)\)</span></li>
+<li>or Xavier 方法(2010)：前传时维持激活值的方差，反传维持梯度的方差
+没懂</li>
+<li>Kaiming 方法(2015)：同上，但针对ReLU 激活函数 还是没懂orz</li>
+<li>或者用训练好的模型参数（通常基于ImageNet 数据集）
+替换预训练模型的分类头，进行微调训练(finetune)</li>
+</ul></li>
+<li><p>随机选取数据子集ℬ，计算近似损失𝐿( Θ|ℬ)</p></li>
+<li><p>前向+反向传播，计算梯度<span class="math inline">\(∇_Θ𝐿(Θ^{𝑡−1}
+|ℬ)\)</span></p></li>
+<li><p>更新参数<span class="math inline">\(Θ ^{(𝑡)} = Θ^ {(𝑡−1)} −
+𝜂∇_Θ𝐿(Θ ^{(𝑡−1)} |ℬ)\)</span></p></li>
+<li><p>不断重复2-3知道收敛</p></li>
+</ol>
+<h3 id="学习率对训练的影响">学习率对训练的影响</h3>
+<p><img
+src="http://www.bdhammel.com/assets/learning-rate/lr-types.png" /></p>
+<p>训练初期可使用较大的学习率(or
+在训练前几轮学习率逐渐上升，直到预设的学习率，以稳定训练的初始阶段<span
+class="math inline">\(\eta_t=\frac{t}{T_0}𝜂_0(t\leq
+T_0)\)</span>)损失函数稳定后下降学习率：<br />
+- 按步长下降</p>
+<ul>
+<li><p>按比例下降<span
+class="math inline">\(\eta_t=𝜂_0𝑒^{−𝑘𝑡}\)</span></p></li>
+<li><p>按倒数下降 <span
+class="math inline">\(\eta_t=\frac{𝜂_0}{\epsilon+t}\)</span></p></li>
+<li><p>按余弦函数下降 <span class="math inline">\(\eta_t=\eta_{\min
+}^i+\frac{1}{2}\left(\eta_{\max }^i-\eta_{\min }^i\right)\left(1+\cos
+\left(\frac{T_{\mathrm{cur}}}{T_i} \pi\right)\right)\)</span></p></li>
+</ul>
+<h3 id="动量momentum-sgd">动量Momentum SGD</h3>
+<h3 id="自适应梯度算法">自适应梯度算法</h3>
+<h3 id="正则化与权重衰减weight-decay">正则化与权重衰减Weight Decay</h3>
+<h3 id="数据增强data-augmentation">数据增强Data Augmentation</h3>
+<p>训练泛化性好的模型，需要大量多样化的数据，<br />
+而数据的采集标注是有成本的</p>
+<p>图像可以通过简单的变换产生一系列"副本"，扩<br />
+充训练数据集</p>
+<p>数据增强操作可以组合，生成变化更复杂的图像</p>
+<ul>
+<li>几何变换</li>
+<li>色彩变换</li>
+<li>随机遮挡</li>
+</ul>
+<h3 id="组合数据增强autoaugment-randaugment">组合数据增强AutoAugment
+&amp; RandAugment</h3>
+<p>AutoAugment 借助强化学习，搜索数据增强的组合策略</p>
+<p>RandAugment 更简单的搜索空间：随机选取N
+个数据增强操作组合，幅度为M</p>
+<p>Mixup 逐像素混合图像</p>
+<p>CutMix 遮盖原图并用另一幅图填充</p>
+<h3 id="标签平滑label-smoothing">标签平滑Label Smoothing</h3>
+<p>动机：类别标注可能错误或不准确，让模型最大限度拟合标注类别可能会有碍于泛化性<br />
+做法：引入平滑参数𝜀，降低标签的"自信程度"</p>
+<p>传统的one-hot 标签：<span class="math inline">\(P_i= \begin{cases}1,
+&amp; i=y \\ 0, &amp; i \neq y\end{cases}\)</span></p>
+<p>平滑标签：<span class="math inline">\(P_i=\left\{\begin{array}{cl}
+1-\varepsilon, &amp; i=y \\ \frac{\varepsilon}{K-1}, &amp; i \neq y
+\end{array}\right.\)</span></p>
+<p>其中，𝐾 为类别总数</p>
+<h3 id="丢弃层dropout">丢弃层Dropout</h3>
+<p>神经网络在训练时会出现共适应现象(co-adaption)，神经元之间产生高度关联，导致过拟合<br />
+训练时随机丢弃一些连接，破坏神经元之间的关联，鼓励学习独立的特征<br />
+推理时使用全部连接<br />
+常用于全连接层，通常不与BN 混用</p>
+<h3 id="自监督学习">自监督学习</h3>
+<pre class="mermaid">
+
+graph LR;
+B-.-&gt;B2
+subgraph part 1
+A3[由图像自身产生的标签y^ ]---3[$L^\prime$]
+A2[图像x]---B2[模型$F_θ$]
+B2---C2[特征z ]
+C2---D[辅助任务]
+D---3
+end
+
+subgraph part 2
+
+A[图像x]---B[模型$F_θ$]
+B---C[特征z ]
+C---D2[分类器]
+D2---1[损失L]
+0[真值y]---1
+
+end
+
+
+</pre>
+<p>标注数据是昂贵的 我们希望程序自己标注好</p>
+<ol type="1">
+<li>通过恰当设计辅助任务，让模型在<strong>无标注</strong>数据集 <span
+class="math inline">\(\mathcal{D}^\prime=\left\{X^\prime_i\right\}_{i=1}^N\)</span>上学习好的特征</li>
+<li>再把模型放在一个相对小的标注数据集上<span
+class="math inline">\(\mathcal{D}\)</span> 训练分类（可选）</li>
+</ol>
+<p>常见类型</p>
+<ul>
+<li>基于代理任务 https://zhuanlan.zhihu.com/p/150224914</li>
+<li>基于对比学习 arXiv:2006.09882, 2020.</li>
+<li>基于掩码学习arXiv:2111.06377, 2021</li>
+</ul>
+<p>Relative Location (ICCV 2015)
+基本假设：模型只有很好地理解到图片内容，才能够预测图像块之间的关系</p>
+<p>SimCLR (ICML 2020)
+基本假设：如果模型能很好地提取图片内容的本质，那么无论图片经过什么样的数据增强操作，提取出来的特征都应该极为相似。</p>
+<p>Masked autoencoders (MAE, CVPR 2022)
+基本假设：模型只有理解图片内容、掌握图片的上下文信息，才能恢复出图片中被随机遮挡的内容。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/OpenMMLab/" rel="tag"># OpenMMLab</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" rel="tag"># 计算机视觉</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/bd762e03.html" rel="prev" title="OpenMMLab实战营第一课  计算机视觉算法基础与OpenMMLab介绍">
+                  <i class="fa fa-chevron-left"></i> OpenMMLab实战营第一课  计算机视觉算法基础与OpenMMLab介绍
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/b64f8831.html" rel="next" title="OpenMMLab实战营第三课 图像分类代码实战与超算平台介绍">
+                  OpenMMLab实战营第三课 图像分类代码实战与超算平台介绍 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mkk</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js","integrity":"sha256-e0o3JYsdjqKajf9eOe22FhioYSz9WofRY4dLKo3F6do="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"catcooc","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body>
+</html>
