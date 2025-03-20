@@ -27,7 +27,7 @@
 <meta property="og:description" content="github准备">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-01-18T15:22:57.000Z">
-<meta property="article:modified_time" content="2023-10-18T11:45:48.552Z">
+<meta property="article:modified_time" content="2025-03-20T06:29:16.379Z">
 <meta property="article:author" content="mkk">
 <meta property="article:tag" content="技术">
 <meta name="twitter:card" content="summary">
@@ -144,7 +144,9 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#github%E5%87%86%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">github准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#node.js-%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">Node.js 安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hexo%E5%AE%89%E8%A3%85"><span class="nav-number">3.</span> <span class="nav-text">hexo安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8buttfly%E4%B8%BB%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">使用buttfly主题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%99%E5%8D%9A%E5%AE%A2"><span class="nav-number">5.</span> <span class="nav-text">写博客</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#npm%E6%9F%A5%E7%9C%8B%E5%B7%B2%E5%AE%89%E8%A3%85%E7%9A%84%E5%8C%85%E5%85%A8%E5%B1%80%E5%92%8C%E6%9C%AC%E5%9C%B0"><span class="nav-number">6.</span> <span class="nav-text">npm查看已安装的包（全局、和本地）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hexo-%E5%A4%9A%E7%A7%8Dmarkdown%E6%B8%B2%E6%9F%93%E5%99%A8%E5%AF%B9%E6%AF%94%E5%88%86%E6%9E%90"><span class="nav-number">7.</span> <span class="nav-text">Hexo
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#github%E5%87%86%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">github准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#node.js-%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">Node.js 安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hexo%E5%AE%89%E8%A3%85"><span class="nav-number">3.</span> <span class="nav-text">hexo安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hexo%E5%91%BD%E4%BB%A4"><span class="nav-number">4.</span> <span class="nav-text">hexo命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86-ssh-%E5%AF%86%E9%92%A5%E6%B7%BB%E5%8A%A0%E5%88%B0-ssh-%E4%BB%A3%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">3. 将 SSH 密钥添加到 SSH
+代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86-ssh-%E5%85%AC%E9%92%A5%E6%B7%BB%E5%8A%A0%E5%88%B0-github-%E8%B4%A6%E6%88%B7"><span class="nav-number">4.2.</span> <span class="nav-text">4. 将 SSH 公钥添加到
+GitHub 账户</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95-ssh-%E8%BF%9E%E6%8E%A5"><span class="nav-number">4.3.</span> <span class="nav-text">5. 测试 SSH 连接</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8buttfly%E4%B8%BB%E9%A2%98"><span class="nav-number">5.</span> <span class="nav-text">使用buttfly主题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%99%E5%8D%9A%E5%AE%A2"><span class="nav-number">6.</span> <span class="nav-text">写博客</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#npm%E6%9F%A5%E7%9C%8B%E5%B7%B2%E5%AE%89%E8%A3%85%E7%9A%84%E5%8C%85%E5%85%A8%E5%B1%80%E5%92%8C%E6%9C%AC%E5%9C%B0"><span class="nav-number">7.</span> <span class="nav-text">npm查看已安装的包（全局、和本地）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hexo-%E5%A4%9A%E7%A7%8Dmarkdown%E6%B8%B2%E6%9F%93%E5%99%A8%E5%AF%B9%E6%AF%94%E5%88%86%E6%9E%90"><span class="nav-number">8.</span> <span class="nav-text">Hexo
 多种Markdown渲染器对比分析</span></a></li></ol></div>
         </div>
         <!--/noindex-->
@@ -160,7 +162,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -234,7 +236,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-10-18 19:45:48" itemprop="dateModified" datetime="2023-10-18T19:45:48+08:00">2023-10-18</time>
+      <time title="修改时间：2025-03-20 14:29:16" itemprop="dateModified" datetime="2025-03-20T14:29:16+08:00">2025-03-20</time>
     </span>
 
   
@@ -264,9 +266,80 @@
 <span id="more"></span>
 <h2 id="node.js-安装">Node.js 安装</h2>
 <h2 id="hexo安装">hexo安装</h2>
-<p>hexo命令</p>
+<h2 id="hexo命令">hexo命令</h2>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo clean &amp;&amp;hexo g &amp;&amp; hexo s</span><br></pre></td></tr></table></figure>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo d</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr class="header">
+<th>命令</th>
+<th>简写</th>
+<th>中文含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>hexo server</td>
+<td>hexo s</td>
+<td>本地启动</td>
+</tr>
+<tr class="even">
+<td>hexo generate</td>
+<td>hexo g</td>
+<td>生成静态文件</td>
+</tr>
+<tr class="odd">
+<td>hexo deploy</td>
+<td>hexo d</td>
+<td>部署网站</td>
+</tr>
+<tr class="even">
+<td>hexo clean</td>
+<td></td>
+<td>清除缓存和已经生成的静态文件</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>遇见 git@github.com: Permission denied (publickey).<br />
+fatal: Could not read from remote repository.</p>
+<p>可以检查ssh 密钥</p>
+<p>1.<strong>检查 SSH 密钥是否存在</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -al ~/.ssh</span><br></pre></td></tr></table></figure>
+<p>检查是否有 <code>id_rsa</code> 和 <code>id_rsa.pub</code>
+文件（或其他类似名称的文件）。如果没有，你需要生成一个新的 SSH
+密钥。</p>
+<p>2.<strong>生成新的 SSH 密钥（如果需要）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 4096 -C &quot;your_email@example.com&quot;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>按 Enter 使用默认文件路径（<code>~/.ssh/id_rsa</code>）。</li>
+<li>设置一个密码（可选，但建议设置以增强安全性）。</li>
+</ul>
+<h3 id="将-ssh-密钥添加到-ssh-代理">3. <strong>将 SSH 密钥添加到 SSH
+代理</strong></h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">eval</span> <span class="string">&quot;<span class="subst">$(ssh-agent -s)</span>&quot;</span></span><br><span class="line">ssh-add ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
+<p>如果你使用了不同的密钥文件名，请将 <code>id_rsa</code>
+替换为正确的文件名。</p>
+<h3 id="将-ssh-公钥添加到-github-账户">4. <strong>将 SSH 公钥添加到
+GitHub 账户</strong></h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> ~/.ssh/id_rsa.pub</span><br></pre></td></tr></table></figure>
+<p>登录 GitHub：</p>
+<ol type="1">
+<li>进入 <strong>Settings</strong> &gt; <strong>SSH and GPG
+keys</strong>。</li>
+<li>点击 <strong>New SSH key</strong>。</li>
+<li>在 "Key" 字段中粘贴你的公钥，并为其命名。</li>
+<li>点击 <strong>Add SSH key</strong>。</li>
+</ol>
+<h3 id="测试-ssh-连接">5. <strong>测试 SSH 连接</strong></h3>
+<p>测试与 GitHub 的连接：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+<p>如果成功，你会看到以下消息：</p>
+<p><code>Hi &lt;username&gt;! You've successfully authenticated, but GitHub does not provide shell access.</code></p>
 <h2 id="使用buttfly主题">使用buttfly主题</h2>
 <h2 id="写博客">写博客</h2>
 <p><code>hexo new [layout]  &lt;title&gt;</code></p>
@@ -345,7 +418,7 @@ id="npm查看已安装的包全局和本地">npm查看已安装的包（全局�
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2025</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
